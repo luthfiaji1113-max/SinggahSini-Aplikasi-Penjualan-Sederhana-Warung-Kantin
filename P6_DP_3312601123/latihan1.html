@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Hello, word!</h1>
+    <!-- HEADER -->
+<header class="bg-primary text-white text-center py-3">
+  <h1>Website Saya</h1>
+  <p class="lead">Contoh Layout Komponen Bootstrap</p>
+</header>
+
+<!-- CONTAINER UTAMA -->
+<div class="container mt-4">
+  <!-- ROW 1: Dua Kolom -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="p-3 bg-light border rounded">
+        <h4>Konten Utama</h4>
+        <p>
+          Ini adalah area konten utama. Layout Bootstrap menggunakan sistem grid 12 kolom,
+          jadi kolom ini mengambil 8 dari 12 bagian layar (col-md-8).
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="p-3 bg-secondary text-white rounded">
+        <h4>Sidebar</h4>
+        <p>Area sidebar di sisi kanan dengan lebar 4 kolom (col-md-4).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Tiga Kolom -->
+  <div class="row text-center">
+    <div class="col-md-4 mb-3">
+      <div class="p-3 bg-info text-white rounded">
+        <h5>Kolom 1</h5>
+        <p>Gunakan col-md-4 untuk membagi tiga kolom sejajar.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="p-3 bg-success text-white rounded">
+        <h5>Kolom 2</h5>
+        <p>Layout ini otomatis responsif di layar kecil.</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="p-3 bg-warning text-dark rounded">
+        <h5>Kolom 3</h5>
+        <p>Ubah lebar kolom sesuai kebutuhan.</p>
+      </div>
+    </div>
+  </div>
+</div>
+   
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

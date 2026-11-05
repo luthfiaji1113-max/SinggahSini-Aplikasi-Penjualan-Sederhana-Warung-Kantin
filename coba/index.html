@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Penjualan - Singgah Sini</title>
+    <!-- Tailwind CSS CDN untuk Desain Antarmuka -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- Container Utama -->
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigasi -->
+        <div class="w-64 bg-indigo-900 text-white flex flex-col justify-between">
+            <div>
+                <div class="p-5 text-2xl font-bold tracking-wider border-b border-indigo-800 flex items-center gap-2">
+                    <i class="fa-solid fa-store"></i> Singgah Sini
+                </div>
+                <nav class="mt-5 space-y-1">
+                    <button onclick="switchTab('transaksi')" id="nav-transaksi" class="w-full flex items-center gap-3 px-6 py-3 text-left bg-indigo-800 border-l-4 border-white font-medium transition">
+                        <i class="fa-solid fa-cash-register w-5"></i> Transaksi Kasir (FR-03)
+                    </button>
+                    <button onclick="switchTab('produk')" id="nav-produk" class="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-indigo-800 transition text-indigo-200">
+                        <i class="fa-solid fa-boxes-stacked w-5"></i> Kelola Produk (FR-02)
+                    </button>
+                    <button onclick="switchTab('kategori')" id="nav-kategori" class="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-indigo-800 transition text-indigo-200">
+                        <i class="fa-solid fa-tags w-5"></i> Kelola Kategori (FR-01)
+                    </button>
+                    <button onclick="switchTab('pencarian')" id="nav-pencarian" class="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-indigo-800 transition text-indigo-200">
+                        <i class="fa-solid fa-magnifying-glass w-5"></i> Cari Data (FR-05)
+                    </button>
+                    <button onclick="switchTab('rekap')" id="nav-rekap" class="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-indigo-800 transition text-indigo-200">
+                        <i class="fa-solid fa-chart-line w-5"></i> Rekap Penjualan (FR-07)
+                    </button>
+                </nav>
+            </div>
+            <div class="p-4 text-xs text-indigo-400 border-t border-indigo-800 text-center">
+                Warung Singgah Sini &bull; V1.0[cite: 1]
+            </div>
+        </div>
+
+        <!-- Konten Utama -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            
+            <!-- Header Atas -->
+            <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+                <h1 id="page-title" class="text-xl font-bold text-gray-800">Transaksi Penjualan</h1>
+                <div class="text-sm text-gray-600 font-medium" id="current-date"></div>
+            </header>
+
+            <!-- Area Konten Dinamis -->
+            <main class="p-6">
+
+                <!-- TAB 1: TRANSAKSI (FR-03, FR-04, FR-06) -->
+                <div id="tab-transaksi" class="tab-content grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Kolom Kiri: Daftar Produk & Input -->
+                    <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Pilih Barang untuk Transaksi (FR-03)</h2>
+                        <div class="mb-4">
+                            <input type="text" id="pos-search" oninput="renderPosProducts()" placeholder="Cari produk berdasarkan nama atau kode..." class="w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[450px] overflow-y-auto p-1" id="pos-product-list">
+                            <!-- Render via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Keranjang & Pembayaran -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold mb-3 text-gray-700">Keranjang Belanja</h2>
+                            <div class="border-b pb-2 mb-3 max-h-[250px] overflow-y-auto space-y-2" id="cart-items">
+                                <p class="text-sm text-gray-400 text-center py-6">Keranjang masih kosong</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between font-bold text-lg mb-4">
+                                <span>Total:</span>
+                                <span id="cart-total" class="text-indigo-600">Rp 0</span>
+                            </div>
+                            <button onclick="checkout()" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition shadow">
+                                Simpan & Bayar Transaksi (FR-04, FR-06)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: KELOLA PRODUK (FR-02) -->
+                <div id="tab-produk" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700" id="product-form-title">Tambah Produk Baru (FR-02)</h2>
+                        <form id="product-form" onsubmit="saveProduct(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <input type="hidden" id="edit-prod-id">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Kode Produk</label>
+                                <input type="text" id="prod-kode" required class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Produk</label>
+                                <input type="text" id="prod-nama" required class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label>
+                                <select id="prod-kategori" required class="w-full border rounded-lg px-3 py-2 text-sm bg-white">
+                                    <!-- Render via JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Harga (Rp)</label>
+                                <input type="number" id="prod-harga" min="0" required class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Stok</label>
+                                <input type="number" id="prod-stok" min="0" required class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div class="flex items-end gap-2">
+                                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">Simpan Produk</button>
+                                <button type="button" onclick="resetProductForm()" id="btn-cancel-prod" class="hidden bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm">Batal</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tabel Daftar Produk -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm overflow-x-auto">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Daftar Produk Singgah Sini</h2>
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 border-b text-gray-600">
+                                    <th class="p-3">Kode</th>
+                                    <th class="p-3">Nama Produk</th>
+                                    <th class="p-3">Kategori</th>
+                                    <th class="p-3">Harga</th>
+                                    <th class="p-3">Stok</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body">
+                                <!-- Render via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: KELOLA KATEGORI (FR-01) -->
+                <div id="tab-kategori" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm max-w-lg">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Tambah Kategori Produk (FR-01)</h2>
+                        <form id="category-form" onsubmit="saveCategory(event)" class="flex gap-3">
+                            <input type="text" id="cat-name" placeholder="Nama Kategori..." required class="flex-1 border rounded-lg px-3 py-2 text-sm">
+                            <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">Tambah</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm max-w-lg">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Daftar Kategori</h2>
+                        <ul id="category-list" class="divide-y border rounded-lg">
+                            <!-- Render via JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- TAB 4: PENCARIAN DATA (FR-05) -->
+                <div id="tab-pencarian" class="tab-content hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Pencarian Data (FR-05)[cite: 1]</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Cari Produk (Kode / Nama / Kategori)</label>
+                                <input type="text" id="search-prod-input" oninput="filterSearchProduct()" placeholder="Ketik kata kunci produk..." class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Cari Transaksi (Tanggal / No. Transaksi)</label>
+                                <input type="text" id="search-trans-input" oninput="filterSearchTrans()" placeholder="Ketik No. Transaksi atau Tanggal (YYYY-MM-DD)..." class="w-full border rounded-lg px-3 py-2 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-sm text-gray-600 mb-2">Hasil Produk</h3>
+                                <div class="border rounded-lg max-h-60 overflow-y-auto p-2" id="search-prod-result">
+                                    <p class="text-xs text-gray-400 p-2">Belum ada pencarian produk</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm text-gray-600 mb-2">Hasil Transaksi</h3>
+                                <div class="border rounded-lg max-h-60 overflow-y-auto p-2" id="search-trans-result">
+                                    <p class="text-xs text-gray-400 p-2">Belum ada pencarian transaksi</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: REKAP PENJUALAN (FR-07) -->
+                <div id="tab-rekap" class="tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-600">
+                            <p class="text-xs text-gray-500 font-semibold uppercase">Total Penjualan Singgah Sini</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="rekap-total-omzet">Rp 0</h3>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-emerald-600">
+                            <p class="text-xs text-gray-500 font-semibold uppercase">Jumlah Transaksi Selesai</p>
+                            <h3 class="text-2xl font-bold text-gray-800 mt-1" id="rekap-total-trx">0</h3>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-amber-500">
+                            <p class="text-xs text-gray-500 font-semibold uppercase">Menu Paling Laris</p>
+                            <h3 class="text-lg font-bold text-gray-800 mt-1 truncate" id="rekap-top-item">-</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h2 class="text-lg font-semibold mb-4 text-gray-700">Riwayat & Rekap Transaksi (Harian / Bulanan) (FR-07)</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b text-gray-600">
+                                        <th class="p-3">No. Transaksi</th>
+                                        <th class="p-3">Waktu</th>
+                                        <th class="p-3">Daftar Item & Qty</th>
+                                        <th class="p-3">Total Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rekap-table-body">
+                                    <!-- Render via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Logika Aplikasi (JavaScript) -->
+    <script>
+        // Inisialisasi Data Awal jika LocalStorage Kosong
+        let categories = JSON.parse(localStorage.getItem('singgah_sini_categories')) || ['Makanan Berat', 'Minuman', 'Cemilan'];
+        let products = JSON.parse(localStorage.getItem('singgah_sini_products')) || [
+            { id: '1', kode: 'P01', nama: 'Nasi Goreng Singgah Sini', kategori: 'Makanan Berat', harga: 15000, stok: 20 },
+            { id: '2', kode: 'P02', nama: 'Es Teh Manis', kategori: 'Minuman', harga: 4000, stok: 50 },
+            { id: '3', kode: 'P03', nama: 'Pisang Goreng Keju', kategori: 'Cemilan', harga: 7000, stok: 15 }
+        ];
+        let transactions = JSON.parse(localStorage.getItem('singgah_sini_transactions')) || [];
+        let cart = [];
+
+        // Set Tanggal Header
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Fungsi Navigasi Antar Tab
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Style Sidebar Button
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-indigo-800 transition text-indigo-200";
+            });
+            document.getElementById(`nav-${tabId}`).className = "w-full flex items-center gap-3 px-6 py-3 text-left bg-indigo-800 border-l-4 border-white font-medium transition text-white";
+
+            // Title Header Update
+            const titles = { transaksi: 'Transaksi Penjualan', produk: 'Kelola Produk', kategori: 'Kelola Kategori', pencarian: 'Pencarian Data', rekap: 'Rekap Penjualan' };
+            document.getElementById('page-title').innerText = titles[tabId];
+
+            if (tabId === 'transaksi') renderPosProducts();
+            if (tabId === 'produk') { renderProductTable(); populateCategoryDropdown(); }
+            if (tabId === 'kategori') renderCategoryList();
+            if (tabId === 'rekap') renderRekap();
+        }
+
+        function saveData() {
+            localStorage.setItem('singgah_sini_categories', JSON.stringify(categories));
+            localStorage.setItem('singgah_sini_products', JSON.stringify(products));
+            localStorage.setItem('singgah_sini_transactions', JSON.stringify(transactions));
+        }
+
+        // --- 1. KELOLA KATEGORI (FR-01) ---
+        function renderCategoryList() {
+            const list = document.getElementById('category-list');
+            list.innerHTML = categories.map((cat, index) => `
+                <li class="flex justify-between items-center p-3 text-sm">
+                    <span class="font-medium text-gray-700">${cat}</span>
+                    <button onclick="deleteCategory(${index})" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                </li>
+            `).join('');
+        }
+
+        function saveCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('cat-name').value.trim();
+            if (categories.includes(name)) return alert('Kategori sudah ada!');
+            categories.push(name);
+            saveData();
+            document.getElementById('cat-name').value = '';
+            renderCategoryList();
+            alert('Kategori berhasil ditambahkan (FR-01)');
+        }
+
+        function deleteCategory(index) {
+            if (confirm('Yakin ingin menghapus kategori ini?')) {
+                categories.splice(index, 1);
+                saveData();
+                renderCategoryList();
+            }
+        }
+
+        function populateCategoryDropdown() {
+            const select = document.getElementById('prod-kategori');
+            select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        // --- 2. KELOLA PRODUK (FR-02) ---
+        function renderProductTable() {
+            const tbody = document.getElementById('product-table-body');
+            tbody.innerHTML = products.map(p => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-medium text-gray-600">${p.kode}</td>
+                    <td class="p-3">${p.nama}</td>
+                    <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded text-xs">${p.kategori}</span></td>
+                    <td class="p-3">Rp ${p.harga.toLocaleString('id-ID')}</td>
+                    <td class="p-3"><span class="${p.stok <= 5 ? 'text-red-600 font-bold' : ''}">${p.stok}</span></td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="editProduct('${p.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProduct('${p.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-prod-id').value;
+            const kode = document.getElementById('prod-kode').value;
+            const nama = document.getElementById('prod-nama').value;
+            const kategori = document.getElementById('prod-kategori').value;
+            const harga = parseInt(document.getElementById('prod-harga').value);
+            const stok = parseInt(document.getElementById('prod-stok').value);
+
+            if (id) {
+                const prod = products.find(p => p.id === id);
+                prod.kode = kode; prod.nama = nama; prod.kategori = kategori; prod.harga = harga; prod.stok = stok;
+            } else {
+                products.push({ id: Date.now().toString(), kode, nama, kategori, harga, stok });
+            }
+            saveData();
+            resetProductForm();
+            renderProductTable();
+            alert('Data produk berhasil disimpan (FR-02)');
+        }
+
+        function editProduct(id) {
+            const p = products.find(prod => prod.id === id);
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('prod-kode').value = p.kode;
+            document.getElementById('prod-nama').value = p.nama;
+            document.getElementById('prod-kategori').value = p.kategori;
+            document.getElementById('prod-harga').value = p.harga;
+            document.getElementById('prod-stok').value = p.stok;
+            document.getElementById('product-form-title').innerText = "Edit Produk";
+            document.getElementById('btn-cancel-prod').classList.remove('hidden');
+        }
+
+        function resetProductForm() {
+            document.getElementById('product-form').reset();
+            document.getElementById('edit-prod-id').value = '';
+            document.getElementById('product-form-title').innerText = "Tambah Produk Baru (FR-02)";
+            document.getElementById('btn-cancel-prod').classList.add('hidden');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Hapus produk ini?')) {
+                products = products.filter(p => p.id !== id);
+                saveData();
+                renderProductTable();
+            }
+        }
+
+        // --- 3. TRANSAKSI & VALIDASI (FR-03, FR-04, FR-06) ---
+        function renderPosProducts() {
+            const keyword = document.getElementById('pos-search').value.toLowerCase();
+            const list = document.getElementById('pos-product-list');
+            const filtered = products.filter(p => p.nama.toLowerCase().includes(keyword) || p.kode.toLowerCase().includes(keyword));
+
+            list.innerHTML = filtered.map(p => `
+                <div onclick="addToCart('${p.id}')" class="border rounded-xl p-3 cursor-pointer hover:border-indigo-500 hover:shadow-md transition flex flex-col justify-between bg-white">
+                    <div>
+                        <div class="text-xs text-gray-400 font-mono">${p.kode}</div>
+                        <div class="font-semibold text-gray-800 text-sm mt-1">${p.nama}</div>
+                    </div>
+                    <div class="mt-3 flex justify-between items-end">
+                        <span class="text-indigo-600 font-bold text-sm">Rp ${p.harga.toLocaleString('id-ID')}</span>
+                        <span class="text-xs text-gray-500">Stok: ${p.stok}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            if (prod.stok <= 0) {
+                alert('Stok produk habis!');
+                return;
+            }
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                if (existing.qty + 1 > prod.stok) {
+                    alert('Jumlah melebihi stok yang tersedia! (FR-06)');
+                    return;
+                }
+                existing.qty++;
+            } else {
+                cart.push({ id: prod.id, nama: prod.nama, harga: prod.harga, qty: 1, maxStok: prod.stok });
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = `<p class="text-sm text-gray-400 text-center py-6">Keranjang masih kosong</p>`;
+                document.getElementById('cart-total').innerText = 'Rp 0';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = cart.map((item, index) => {
+                total += item.harga * item.qty;
+                return `
+                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg text-sm">
+                        <div>
+                            <div class="font-medium text-gray-800">${item.nama}</div>
+                            <div class="text-xs text-gray-500">Rp ${item.harga.toLocaleString('id-ID')} x ${item.qty}</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCartQty(${index}, -1)" class="w-6 h-6 bg-gray-200 rounded flex items-center justify-center font-bold">-</button>
+                            <span class="text-sm font-semibold">${item.qty}</span>
+                            <button onclick="updateCartQty(${index}, 1)" class="w-6 h-6 bg-gray-200 rounded flex items-center justify-center font-bold">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cart-total').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function updateCartQty(index, change) {
+            const item = cart[index];
+            const newQty = item.qty + change;
+            
+            if (newQty <= 0) {
+                cart.splice(index, 1);
+            } else if (newQty > item.maxStok) {
+                alert('Validasi Gagal: Jumlah melebihi stok produk! (FR-06)[cite: 1]');
+                return;
+            } else {
+                item.qty = newQty;
+            }
+            renderCart();
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert('Keranjang belanja kosong!');
+
+            cart.forEach(cartItem => {
+                const prod = products.find(p => p.id === cartItem.id);
+                if (prod) {
+                    prod.stok -= cartItem.qty; // Pengurangan stok (FR-04)
+                }
+            });
+
+            const trxId = 'TRX-' + Date.now().toString().slice(-6);
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const timeStr = now.toLocaleTimeString('id-ID');
+
+            const newTrx = {
+                id: trxId,
+                date: dateStr,
+                time: timeStr,
+                items: [...cart],
+                total: cart.reduce((sum, item) => sum + (item.harga * item.qty), 0)
+            };
+
+            transactions.push(newTrx);
+            saveData();
+
+            alert(`Transaksi Berhasil Disimpan dengan No: ${trxId}\nStok telah diperbarui secara otomatis (FR-04)[cite: 1]`);
+            cart = [];
+            renderCart();
+            renderPosProducts();
+        }
+
+        // --- 4. PENCARIAN DATA (FR-05) ---
+        function filterSearchProduct() {
+            const query = document.getElementById('search-prod-input').value.toLowerCase();
+            const resultDiv = document.getElementById('search-prod-result');
+            
+            if (!query) {
+                resultDiv.innerHTML = `<p class="text-xs text-gray-400 p-2">Ketik kata kunci pencarian produk</p>`;
+                return;
+            }
+
+            const filtered = products.filter(p => 
+                p.kode.toLowerCase().includes(query) || 
+                p.nama.toLowerCase().includes(query) || 
+                p.kategori.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                resultDiv.innerHTML = `<p class="text-xs text-red-500 p-2">Produk tidak ditemukan</p>`;
+                return;
+            }
+
+            resultDiv.innerHTML = filtered.map(p => `
+                <div class="p-2 border-b text-sm flex justify-between">
+                    <div><b>${p.kode}</b> - ${p.nama} (${p.kategori})</div>
+                    <div class="text-indigo-600 font-semibold">Stok: ${p.stok} | Rp ${p.harga}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterSearchTrans() {
+            const query = document.getElementById('search-trans-input').value.toLowerCase();
+            const resultDiv = document.getElementById('search-trans-result');
+
+            if (!query) {
+                resultDiv.innerHTML = `<p class="text-xs text-gray-400 p-2">Ketik tanggal atau nomor transaksi</p>`;
+                return;
+            }
+
+            const filtered = transactions.filter(t => 
+                t.id.toLowerCase().includes(query) || 
+                t.date.includes(query)
+            );
+
+            if (filtered.length === 0) {
+                resultDiv.innerHTML = `<p class="text-xs text-red-500 p-2">Transaksi tidak ditemukan</p>`;
+                return;
+            }
+
+            resultDiv.innerHTML = filtered.map(t => `
+                <div class="p-2 border-b text-sm">
+                    <div class="font-bold text-indigo-700">${t.id} <span class="text-xs text-gray-500 font-normal">(${t.date} ${t.time})</span></div>
+                    <div class="text-xs text-gray-600">Total: Rp ${t.total.toLocaleString('id-ID')}</div>
+                </div>
+            `).join('');
+        }
+
+        // --- 5. REKAP PENJUALAN (FR-07) ---
+        function renderRekap() {
+            let totalOmzet = transactions.reduce((sum, t) => sum + t.total, 0);
+            document.getElementById('rekap-total-omzet').innerText = `Rp ${totalOmzet.toLocaleString('id-ID')}`;
+            document.getElementById('rekap-total-trx').innerText = transactions.length;
+
+            let itemCounts = {};
+            transactions.forEach(t => {
+                t.items.forEach(i => {
+                    itemCounts[i.nama] = (itemCounts[i.nama] || 0) + i.qty;
+                });
+            });
+
+            let topItem = "-";
+            let maxQty = 0;
+            for (let name in itemCounts) {
+                if (itemCounts[name] > maxQty) {
+                    maxQty = itemCounts[name];
+                    topItem = `${name} (${maxQty} terjual)`;
+                }
+            }
+            document.getElementById('rekap-top-item').innerText = topItem;
+
+            const tbody = document.getElementById('rekap-table-body');
+            if (transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 text-sm">Belum ada data transaksi</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = transactions.slice().reverse().map(t => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-semibold text-indigo-600">${t.id}</td>
+                    <td class="p-3 text-xs text-gray-600">${t.date} | ${t.time}</td>
+                    <td class="p-3 text-xs">
+                        ${t.items.map(i => `${i.nama} (${i.qty}x)`).join(', ')}
+                    </td>
+                    <td class="p-3 font-medium">Rp ${t.total.toLocaleString('id-ID')}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

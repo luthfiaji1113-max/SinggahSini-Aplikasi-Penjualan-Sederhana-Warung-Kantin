@@ -1,0 +1,242 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    padding-top: 70px;
+}
+
+/* ==========================================
+   1. Navbar
+   ========================================== */
+.navbar {
+    background-color: #004080; /* a. biru tua */
+    padding: 1rem 0;
+    color: #ffcc00;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.navbar a {
+    color: #ffcc00; /* b. teks link kuning */
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.navbar a:hover {
+    color: #66ff99; /* c. hover hijau muda */
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.navbar .nav-links li {
+    margin-left: 20px;
+}
+
+/* ==========================================
+   3. Logo
+   ========================================== */
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+/* ==========================================
+   2. Hero Section
+   ========================================== */
+#home {
+    /* a & c. Gambar hero + overlay hitam transparan (rgba(0,0,0,0.5)) */
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("laut.jpg") no-repeat center center/cover;
+    height: 500px; /* b. tinggi 500px */
+    color: white;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#home h1 {
+    font-size: 3rem;
+}
+
+#home .btn {
+    display: inline-block;
+    background-color: brown;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    margin-top: 20px;
+}
+
+#home .btn:hover {
+    background-color: #e04e32;
+}
+
+/* ==========================================
+   4. Produk Section
+   ========================================== */
+#produk {
+    background-color: #f9f9f9; /* a. abu-abu muda */
+    padding: 50px 0;
+}
+
+#produk h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.feature-box {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.feature {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    width: 30%;
+}
+
+/* c. Lebar gambar produk 100% dari kotak .feature */
+.feature img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.feature h3 {
+    margin-bottom: 15px;
+}
+
+.feature p {
+    font-size: 1rem;
+}
+
+/* ==========================================
+   5. Tentang Kami
+   ========================================== */
+#tentang {
+    /* a. gradasi linear dari biru muda ke putih */
+    background: linear-gradient(to bottom, #add8e6, #ffffff);
+    padding: 50px 0;
+    text-align: center;
+}
+
+#tentang h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+#tentang p {
+    margin: 10px auto;
+    font-size: 1.1rem;
+    text-align: justify; /* b. rata kiri-kanan */
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+/* ==========================================
+   6. Kontak
+   ========================================== */
+#kontak {
+    /* a. gambar pattern */
+    background: url("images.png") repeat;
+    padding: 50px 0;
+}
+
+#kontak h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+#kontak p {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-form input,
+.contact-form textarea {
+    margin-bottom: 15px;
+    padding: 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+/* b. border warna biru saat fokus */
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border: 2px solid blue;
+}
+
+.contact-form button {
+    background-color: #ff6347;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.contact-form button:hover {
+    background-color: #e04e32;
+}
+
+/* ==========================================
+   7. Footer
+   ========================================== */
+footer {
+    background-color: #000; /* a. hitam pekat */
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    margin: 0 5px;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #ff3333; /* b. merah saat di-hover */
+}

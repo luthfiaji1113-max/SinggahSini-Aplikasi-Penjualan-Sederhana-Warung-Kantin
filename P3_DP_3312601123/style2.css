@@ -1,0 +1,29 @@
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    display: block;
+    margin: 0 auto;
+}
+
+.rounded {
+    width: 200px;
+    height: auto;
+    border-radius: 15%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    display: block;
+    margin: 20px auto;  
+}
+
+.oval {
+    width: 150px;
+    height: 100px;
+    border-radius: 50% / 25%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    display: block;
+    margin: 20px auto;
+}

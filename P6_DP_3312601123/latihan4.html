@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Latihan 2</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand fw-bold" href="#">MyWebsite</a>
+<div class="d-flex">
+</div>
+</div>
+</nav>
+<!-- HERO SECTION -->
+<section class="text-center py-5 bg-white">
+<div class="container">
+<h1 class="mb-3 fw-bold">Selamat Datang di MyWebsite</h1>
+<p class="lead">Silakan daftar terlebih dahulu.</p>
+<button class="btn btn-primary me-2" >Login Sekarang</button>
+<button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Daftar Akun
+Baru</button>
+</div>
+</section>
+<!-- ======================== -->
+<!-- MODAL REGISTER -->
+<!-- ======================== -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content shadow">
+<div class="modal-header bg-warning">
+<h5 class="modal-title" id="registerModalLabel">Form Register</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form>
+<div class="mb-3">
+<label for="regNama" class="form-label">Nama Lengkap</label>
+<input type="text" class="form-control" id="regNama" placeholder="Nama lengkap Anda" required>
+</div>
+<div class="mb-3">
+<label for="regEmail" class="form-label">Email</label>
+<input type="email" class="form-control" id="regEmail" placeholder="nama@email.com" required>
+</div>
+<div class="mb-3">
+<label for="regPassword" class="form-label">Password</label>
+<input type="password" class="form-control" id="regPassword" placeholder="Minimal 8 karakter" required>
+</div>
+<div class="mb-3">
+<label for="regConfirm" class="form-label">Konfirmasi Password</label>
+<input type="password" class="form-control" id="regConfirm" placeholder="Ulangi password" required>
+</div>
+<button type="submit" class="btn btn-warning w-100 text-dark">Daftar Sekarang</button>
+</form>
+</div>
+<div class="modal-footer">
+<p class="text-center w-100 mb-0">Sudah punya akun?
+<a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">
+Login di sini
+</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>  
+    </body>
+</html>

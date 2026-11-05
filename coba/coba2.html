@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Penjualan Kantin / Warung</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans p-6">
+
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <header class="border-b pb-4 mb-6 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">Kasir Warung & Kantin</h1>
+            <span class="bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded">Status: Aktif</span>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- KOLOM 1: DAFTAR MENU & HARGA -->
+            <div class="bg-gray-50 p-4 rounded-lg border">
+                <h2 class="font-semibold text-lg mb-3 text-gray-700">Daftar Menu & Harga</h2>
+                <p class="text-xs text-gray-500 mb-4">Klik menu untuk memasukkan ke form transaksi:</p>
+                
+                <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
+                    <div onclick="pilihMenu('Nasi Ayam Geprek', 15000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Nasi Ayam Geprek</p>
+                            <p class="text-xs text-gray-500">Makanan</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 15.000</span>
+                    </div>
+
+                    <div onclick="pilihMenu('Nasi Goreng Spesial', 13000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Nasi Goreng Spesial</p>
+                            <p class="text-xs text-gray-500">Makanan</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 13.000</span>
+                    </div>
+
+                    <div onclick="pilihMenu('Mie Instan Telor', 10000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Mie Instan Telor</p>
+                            <p class="text-xs text-gray-500">Makanan</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 10.000</span>
+                    </div>
+
+                    <div onclick="pilihMenu('Es Teh Manis', 4000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Es Teh Manis</p>
+                            <p class="text-xs text-gray-500">Minuman</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 4.000</span>
+                    </div>
+
+                    <div onclick="pilihMenu('Es Jeruk Peras', 5000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Es Jeruk Peras</p>
+                            <p class="text-xs text-gray-500">Minuman</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 5.000</span>
+                    </div>
+
+                    <div onclick="pilihMenu('Aneka Gorengan', 2000)" class="p-3 bg-white border rounded cursor-pointer hover:bg-blue-50 transition flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-sm text-gray-800">Aneka Gorengan</p>
+                            <p class="text-xs text-gray-500">Cemilan</p>
+                        </div>
+                        <span class="text-blue-600 font-bold text-sm">Rp 2.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KOLOM 2: FORM INPUT TRANSAKSI -->
+            <div class="bg-gray-50 p-4 rounded-lg border">
+                <h2 class="font-semibold text-lg mb-4 text-gray-700">Form Transaksi</h2>
+                <form id="formKasir" onsubmit="tambahTransaksi(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Nama Menu</label>
+                        <input type="text" id="namaMenu" placeholder="Pilih dari daftar menu" readonly required class="w-full mt-1 p-2 border rounded bg-gray-100 text-gray-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Harga Satuan (Rp)</label>
+                        <input type="number" id="harga" placeholder="0" readonly required class="w-full mt-1 p-2 border rounded bg-gray-100 text-gray-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Jumlah (Qty)</label>
+                        <input type="number" id="qty" value="1" min="1" required class="w-full mt-1 p-2 border rounded bg-white">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Tambah ke Keranjang</button>
+                </form>
+            </div>
+
+            <!-- KOLOM 3: TABEL KASIR & RINGKASAN -->
+            <div class="md:col-span-3 bg-gray-50 p-4 rounded-lg border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-semibold text-lg text-gray-700">Daftar Pesanan / Transaksi</h2>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-500">Total Pembayaran:</span>
+                        <div id="totalPenjualan" class="text-xl font-bold text-blue-600">Rp 0</div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-white border rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-100 border-b">
+                            <tr>
+                                <th class="p-3">Menu</th>
+                                <th class="p-3">Harga</th>
+                                <th class="p-3">Qty</th>
+                                <th class="p-3">Subtotal</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelTransaksi">
+                            <tr>
+                                <td colspan="5" class="p-4 text-center text-gray-400">Belum ada transaksi yang dipilih.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let daftarTransaksi = [];
+
+        // Fungsi saat salah satu menu diklik
+        function pilihMenu(nama, harga) {
+            document.getElementById('namaMenu').value = nama;
+            document.getElementById('harga').value = harga;
+            document.getElementById('qty').value = 1;
+        }
+
+        // Fungsi memasukkan data ke tabel transaksi
+        function tambahTransaksi(e) {
+            e.preventDefault();
+            const nama = document.getElementById('namaMenu').value;
+            const harga = parseFloat(document.getElementById('harga').value);
+            const qty = parseInt(document.getElementById('qty').value);
+
+            if (!nama) {
+                alert("Silakan pilih menu terlebih dahulu dari daftar di sebelah kiri!");
+                return;
+            }
+
+            const subtotal = harga * qty;
+
+            daftarTransaksi.push({ id: Date.now(), nama, harga, qty, subtotal });
+            
+            // Reset form input
+            document.getElementById('formKasir').reset();
+            document.getElementById('namaMenu').value = "";
+            document.getElementById('harga').value = "";
+
+            renderTabel();
+        }
+
+        // Fungsi menghapus item dari tabel
+        function hapusTransaksi(id) {
+            daftarTransaksi = daftarTransaksi.filter(item => item.id !== id);
+            renderTabel();
+        }
+
+        // Render ulang tampilan tabel dan total harga
+        function renderTabel() {
+            const tbody = document.getElementById('tabelTransaksi');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            if (daftarTransaksi.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">Belum ada transaksi yang dipilih.</td></tr>`;
+                document.getElementById('totalPenjualan').innerText = 'Rp 0';
+                return;
+            }
+
+            daftarTransaksi.forEach(item => {
+                total += item.subtotal;
+                tbody.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-3 font-medium text-gray-800">${item.nama}</td>
+                        <td class="p-3 text-gray-600">Rp ${item.harga.toLocaleString('id-ID')}</td>
+                        <td class="p-3 text-gray-600">${item.qty}</td>
+                        <td class="p-3 font-semibold text-gray-800">Rp ${item.subtotal.toLocaleString('id-ID')}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="hapusTransaksi(${item.id})" class="text-red-500 hover:underline font-medium">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalPenjualan').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+    </script>
+</body>
+</html>

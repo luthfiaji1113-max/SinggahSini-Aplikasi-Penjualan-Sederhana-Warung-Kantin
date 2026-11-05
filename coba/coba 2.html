@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SinggahSini - Sistem Kasir & POS Kantin</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Vue.js 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-receipt, #printable-receipt * {
+                visibility: visible;
+            }
+            #printable-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased selection:bg-orange-500 selection:text-white">
+
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <!-- 1. HALAMAN LOGIN -->
+        <div v-if="!isLoggedIn" class="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-orange-600/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-600/20 rounded-full blur-3xl"></div>
+
+            <div class="bg-white/95 backdrop-blur-md w-full max-w-md rounded-2xl shadow-2xl p-8 border border-slate-200/50 relative z-10">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-orange-500/30 text-white">
+                        <i data-lucide="store" class="w-8 h-8"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-slate-900 tracking-tight">SinggahSini POS</h1>
+                    <p class="text-xs text-slate-500 mt-1">Sistem Point of Sale & Management Kantin</p>
+                </div>
+
+                <form @submit.prevent="handleLogin" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">PILIH AKUN / KASIR</label>
+                        <select v-model="loginForm.userType" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm font-medium bg-white outline-none">
+                            <option value="Kasir Utama">Kasir Utama (Shift Pagi)</option>
+                            <option value="Admin Kantin">Administrator / Owner</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN AKSEs (4 DIGIT)</label>
+                        <input type="password" maxlength="4" v-model="loginForm.pin" placeholder="••••" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-center text-lg font-bold tracking-widest outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-orange-500/25 transition duration-200 text-sm flex items-center justify-center space-x-2">
+                        <span>Masuk ke Kasir</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 text-center">
+                    <p class="text-xs text-slate-400">Petunjuk: Masukkan PIN bebas (contoh: 1234) untuk masuk ke aplikasi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. LAYOUT UTAMAsetelah LOGIN -->
+        <div v-else class="flex flex-1 h-screen overflow-hidden">
+
+            <!-- SIDEBAR NAVIGASI -->
+            <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between border-r border-slate-800 z-20">
+                <div>
+                    <!-- Brand Header -->
+                    <div class="h-16 px-6 flex items-center space-x-3 border-b border-slate-800">
+                        <div class="w-9 h-9 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+                            <i data-lucide="store" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-white text-base leading-tight">SinggahSini</h2>
+                            <span class="text-[10px] text-orange-400 uppercase tracking-widest font-semibold">Point of Sale</span>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="p-4 space-y-1">
+                        <button @click="navigate('dashboard')" :class="['w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all', currentTab === 'dashboard' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'hover:bg-slate-800 hover:text-white']">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <span>Dashboard</span>
+                        </button>
+
+                        <button @click="navigate('pos')" :class="['w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all', currentTab === 'pos' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'hover:bg-slate-800 hover:text-white']">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            <span>Kasir / POS</span>
+                            <span v-if="cart.length > 0" class="ml-auto bg-amber-500 text-slate-900 text-[10px] px-1.5 py-0.5 rounded-full font-bold">{{ cart.length }}</span>
+                        </button>
+
+                        <button @click="navigate('stok')" :class="['w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all', currentTab === 'stok' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'hover:bg-slate-800 hover:text-white']">
+                            <i data-lucide="box" class="w-4 h-4"></i>
+                            <span>Kelola Stok & Produk</span>
+                            <span v-if="lowStockProducts.length > 0" class="ml-auto bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] px-1.5 py-0.5 rounded-full font-bold">{{ lowStockProducts.length }}</span>
+                        </button>
+
+                        <button @click="navigate('riwayat')" :class="['w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all', currentTab === 'riwayat' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'hover:bg-slate-800 hover:text-white']">
+                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                            <span>Riwayat Transaksi</span>
+                        </button>
+
+                        <button @click="navigate('rekap')" :class="['w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all', currentTab === 'rekap' ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'hover:bg-slate-800 hover:text-white']">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                            <span>Rekapitulasi</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- User Profile & Logout -->
+                <div class="p-4 border-t border-slate-800 bg-slate-950/40">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white border border-slate-600">
+                                {{ activeUser.charAt(0) }}
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-white leading-tight">{{ activeUser }}</p>
+                                <span class="text-[10px] text-slate-400">Kasir Aktif</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button @click="handleLogout" class="w-full flex items-center justify-center space-x-2 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold transition border border-red-500/20">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                        <span>Keluar Sistem</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- KONTEN UTAMA -->
+            <div class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50">
+                <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10">
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-lg font-bold text-slate-800 capitalize">{{ currentTabName }}</h1>
+                        <span class="text-xs text-slate-400">| Shift Kantin Siang</span>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-bold text-slate-800">{{ currentTime }}</p>
+                            <p class="text-[10px] text-slate-400">{{ currentDate }}</p>
+                        </div>
+                        <div class="h-8 w-[1px] bg-slate-200"></div>
+                        <div class="flex items-center space-x-1 text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-medium">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-y-auto p-6">
+                    <!-- DASHBOARD -->
+                    <div v-if="currentTab === 'dashboard'" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-500 mb-1">Pendapatan Hari Ini</p>
+                                    <h3 class="text-xl font-extrabold text-slate-900">Rp {{ formatRupiah(todayIncome) }}</h3>
+                                    <p class="text-[10px] text-emerald-600 font-semibold mt-1">↑ 12% dari kemarin</p>
+                                </div>
+                                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-500 mb-1">Total Transaksi</p>
+                                    <h3 class="text-xl font-extrabold text-slate-900">{{ todayTransactionsCount }} Nota</h3>
+                                    <p class="text-[10px] text-blue-600 font-semibold mt-1">Hari ini</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-500 mb-1">Item Terjual</p>
+                                    <h3 class="text-xl font-extrabold text-slate-900">{{ todayItemsSold }} Porsi</h3>
+                                    <p class="text-[10px] text-amber-600 font-semibold mt-1">Makanan & Minuman</p>
+                                </div>
+                                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="utensils" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-medium text-slate-500 mb-1">Stok Perlu Diisi</p>
+                                    <h3 class="text-xl font-extrabold text-red-600">{{ lowStockProducts.length }} Produk</h3>
+                                    <p class="text-[10px] text-red-500 font-semibold mt-1">Peringatan stok &lt;= 5</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-slate-800 text-sm">Grafik Penjualan Mingguan</h3>
+                                    <span class="text-xs text-slate-400">7 Hari Terakhir</span>
+                                </div>
+                                <div class="h-64 relative">
+                                    <canvas id="salesChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center justify-between">
+                                        <span>Stok Perlu Ditambah</span>
+                                        <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
+                                    </h3>
+                                    <div class="space-y-3 max-h-56 overflow-y-auto pr-1">
+                                        <div v-for="item in lowStockProducts" :key="item.id" class="flex items-center justify-between p-2.5 bg-red-50/50 rounded-xl border border-red-100">
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">{{ item.name }}</p>
+                                                <p class="text-[10px] text-slate-500">{{ item.category }}</p>
+                                            </div>
+                                            <span class="text-xs font-extrabold text-red-600 bg-white px-2 py-1 rounded-lg border border-red-200">Sisa: {{ item.stock }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button @click="navigate('stok')" class="w-full mt-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition">
+                                    Kelola Stok Sekarang
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KASIR / POS -->
+                    <div v-if="currentTab === 'pos'" class="h-full flex flex-col lg:flex-row gap-6 overflow-hidden">
+                        <div class="flex-1 flex flex-col space-y-4 overflow-hidden">
+                            <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3">
+                                <div class="relative flex-1">
+                                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-slate-400"></i>
+                                    <input type="text" v-model="searchQuery" placeholder="Cari nama menu makanan atau minuman..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white">
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button @click="selectedCategory = ''" :class="['px-3.5 py-2 rounded-xl text-xs font-semibold transition', selectedCategory === '' ? 'bg-orange-600 text-white shadow-md shadow-orange-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']">Semua</button>
+                                    <button @click="selectedCategory = 'Makanan'" :class="['px-3.5 py-2 rounded-xl text-xs font-semibold transition', selectedCategory === 'Makanan' ? 'bg-orange-600 text-white shadow-md shadow-orange-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']">Makanan</button>
+                                    <button @click="selectedCategory = 'Minuman'" :class="['px-3.5 py-2 rounded-xl text-xs font-semibold transition', selectedCategory === 'Minuman' ? 'bg-orange-600 text-white shadow-md shadow-orange-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200']">Minuman</button>
+                                </div>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto pr-1">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    <div v-for="product in filteredProducts" :key="product.id" @click="addToCart(product)" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-orange-500 cursor-pointer transition flex flex-col justify-between group relative overflow-hidden">
+                                        <div>
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 group-hover:bg-orange-50 group-hover:text-orange-600 transition">{{ product.category }}</span>
+                                                <span :class="['text-[10px] font-bold px-1.5 py-0.5 rounded-md', product.stock <= 5 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-700']">Stok: {{ product.stock }}</span>
+                                            </div>
+                                            <h4 class="font-bold text-slate-800 text-sm group-hover:text-orange-600 transition leading-snug">{{ product.name }}</h4>
+                                        </div>
+
+                                        <div class="mt-4 flex items-center justify-between">
+                                            <span class="text-sm font-extrabold text-slate-900">Rp {{ formatRupiah(product.price) }}</span>
+                                            <div class="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white flex items-center justify-center transition shadow-sm">
+                                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full lg:w-96 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex flex-col h-full">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="shopping-cart" class="w-5 h-5 text-orange-600"></i>
+                                    <h3 class="font-bold text-slate-800 text-sm">Keranjang Pesanan</h3>
+                                </div>
+                                <button v-if="cart.length > 0" @click="clearCart" class="text-xs text-red-500 hover:text-red-700 font-semibold">
+                                    Kosongkan
+                                </button>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                                <div v-if="cart.length === 0" class="h-full flex flex-col items-center justify-center text-center text-slate-400">
+                                    <i data-lucide="shopping-bag" class="w-12 h-12 stroke-1 mb-2"></i>
+                                    <p class="text-xs font-semibold">Keranjang masih kosong</p>
+                                </div>
+
+                                <div v-for="(item, index) in cart" :key="item.id" class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 flex flex-col space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">{{ item.name }}</p>
+                                            <p class="text-[10px] text-slate-500">Rp {{ formatRupiah(item.price) }}</p>
+                                        </div>
+                                        <span class="text-xs font-bold text-slate-900">Rp {{ formatRupiah(item.price * item.qty) }}</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between pt-1">
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="updateQty(index, -1)" class="w-6 h-6 rounded-lg bg-white border border-slate-300 text-slate-600">-</button>
+                                            <span class="text-xs font-bold w-6 text-center">{{ item.qty }}</span>
+                                            <button @click="updateQty(index, 1)" class="w-6 h-6 rounded-lg bg-white border border-slate-300 text-slate-600">+</button>
+                                        </div>
+                                        <button @click="removeFromCart(index)" class="text-red-400 hover:text-red-600 text-[10px] font-medium">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3 rounded-b-2xl">
+                                <div class="space-y-1.5 text-xs">
+                                    <div class="flex justify-between text-slate-500">
+                                        <span>Subtotal</span>
+                                        <span>Rp {{ formatRupiah(cartSubtotal) }}</span>
+                                    </div>
+                                    <div class="flex justify-between font-extrabold text-sm text-slate-900 pt-2 border-t border-slate-200">
+                                        <span>Total Tagihan</span>
+                                        <span class="text-orange-600">Rp {{ formatRupiah(cartSubtotal) }}</span>
+                                    </div>
+                                </div>
+
+                                <button @click="openPaymentModal" :disabled="cart.length === 0" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl shadow-lg shadow-orange-500/20 text-xs flex items-center justify-center space-x-2 transition">
+                                    <i data-lucide="credit-card" class="w-4 h-4"></i>
+                                    <span>Bayar & Cetak Nota</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KELOLA STOK (CRUD) -->
+                    <div v-if="currentTab === 'stok'" class="space-y-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm">Manajemen Stok & Katalog Menu</h3>
+                                <p class="text-xs text-slate-500">Tambah, ubah harga, dan perbarui sisa stok kantin.</p>
+                            </div>
+                            <button @click="openProductModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-md shadow-orange-500/20 flex items-center space-x-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                <span>Tambah Menu Baru</span>
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                                            <th class="p-4">ID</th>
+                                            <th class="p-4">Nama Produk</th>
+                                            <th class="p-4">Kategori</th>
+                                            <th class="p-4">Harga Satuan</th>
+                                            <th class="p-4">Sisa Stok</th>
+                                            <th class="p-4 text-center">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr v-for="item in products" :key="item.id" class="hover:bg-slate-50">
+                                            <td class="p-4 font-mono text-slate-400">#{{ item.id }}</td>
+                                            <td class="p-4 font-bold text-slate-800">{{ item.name }}</td>
+                                            <td class="p-4">
+                                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold text-[10px]">{{ item.category }}</span>
+                                            </td>
+                                            <td class="p-4 font-semibold text-slate-800">Rp {{ formatRupiah(item.price) }}</td>
+                                            <td class="p-4">
+                                                <span :class="['px-2 py-1 rounded-lg font-extrabold text-[10px]', item.stock <= 5 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-emerald-100 text-emerald-700']">
+                                                    {{ item.stock }} Porsi/Item
+                                                </span>
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                <div class="flex justify-center space-x-2">
+                                                    <button @click="openProductModal(item)" class="p-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                                                    <button @click="deleteProduct(item.id)" class="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIWAYAT TRANSAKSI -->
+                    <div v-if="currentTab === 'riwayat'" class="space-y-6">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+                            <div class="relative w-full sm:w-96">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-slate-400"></i>
+                                <input type="text" v-model="historySearch" placeholder="Cari Nota ID atau Nama Kasir..." class="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            </div>
+                            <span class="text-xs text-slate-500 font-medium">Total: {{ filteredTransactions.length }} Transaksi</span>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                                            <th class="p-4">No. Nota</th>
+                                            <th class="p-4">Tanggal & Waktu</th>
+                                            <th class="p-4">Kasir</th>
+                                            <th class="p-4">Metode Pembayaran</th>
+                                            <th class="p-4">Total Belanja</th>
+                                            <th class="p-4 text-center">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr v-for="trx in filteredTransactions" :key="trx.id" class="hover:bg-slate-50">
+                                            <td class="p-4 font-mono font-bold text-orange-600">{{ trx.id }}</td>
+                                            <td class="p-4 text-slate-600">{{ trx.date }}</td>
+                                            <td class="p-4 text-slate-800 font-medium">{{ trx.cashier }}</td>
+                                            <td class="p-4">
+                                                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold text-[10px]">{{ trx.method }}</span>
+                                            </td>
+                                            <td class="p-4 font-extrabold text-slate-900">Rp {{ formatRupiah(trx.total) }}</td>
+                                            <td class="p-4 text-center">
+                                                <button @click="showReceiptModal(trx)" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-bold">
+                                                    Lihat Struk
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REKAPITULASI -->
+                    <div v-if="currentTab === 'rekap'" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                                <h3 class="font-bold text-slate-800 text-sm border-b pb-3">Ringkasan Omzet Kantin</h3>
+                                <div class="space-y-3 text-xs">
+                                    <div class="flex justify-between py-2 border-b border-slate-100">
+                                        <span class="text-slate-500">Total Transaksi Berhasil</span>
+                                        <span class="font-bold text-slate-800">{{ transactions.length }} Nota</span>
+                                    </div>
+                                    <div class="flex justify-between py-2 border-b border-slate-100">
+                                        <span class="text-slate-500">Total Pemasukan Bersih</span>
+                                        <span class="font-extrabold text-emerald-600 text-sm">Rp {{ formatRupiah(totalIncomeAll) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                                <h3 class="font-bold text-slate-800 text-sm border-b pb-3">Produk Paling Laris</h3>
+                                <div class="space-y-3">
+                                    <div v-for="prod in products" :key="prod.id" class="flex items-center justify-between p-2 hover:bg-slate-50 rounded-xl transition">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-xs">
+                                                {{ prod.name.charAt(0) }}
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">{{ prod.name }}</p>
+                                                <span class="text-[10px] text-slate-400">{{ prod.category }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-extrabold text-slate-900">Rp {{ formatRupiah(prod.price) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- MODAL PEMBAYARAN -->
+        <div v-if="isPaymentModalOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+                <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-sm">Proses Pembayaran</h3>
+                    <button @click="isPaymentModalOpen = false" class="text-slate-400 hover:text-white">✕</button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="text-center p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                        <p class="text-xs text-slate-500">Total Tagihan Nota</p>
+                        <h2 class="text-2xl font-extrabold text-orange-600 mt-1">Rp {{ formatRupiah(cartSubtotal) }}</h2>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Metode Pembayaran</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button @click="paymentMethod = 'Cash'" :class="['py-2 text-xs font-bold rounded-xl border transition', paymentMethod === 'Cash' ? 'bg-orange-600 text-white border-orange-600' : 'bg-slate-50 border-slate-200 text-slate-700']">Tunai</button>
+                            <button @click="paymentMethod = 'QRIS'" :class="['py-2 text-xs font-bold rounded-xl border transition', paymentMethod === 'QRIS' ? 'bg-orange-600 text-white border-orange-600' : 'bg-slate-50 border-slate-200 text-slate-700']">QRIS</button>
+                            <button @click="paymentMethod = 'Debit'" :class="['py-2 text-xs font-bold rounded-xl border transition', paymentMethod === 'Debit' ? 'bg-orange-600 text-white border-orange-600' : 'bg-slate-50 border-slate-200 text-slate-700']">Debit</button>
+                        </div>
+                    </div>
+
+                    <div v-if="paymentMethod === 'Cash'">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Uang Diterima (Rp)</label>
+                        <input type="number" v-model.number="cashPaid" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-orange-500 text-sm font-bold outline-none">
+                        <div class="flex justify-between items-center mt-2 text-xs font-bold">
+                            <span class="text-slate-500">Kembalian:</span>
+                            <span :class="cashChange >= 0 ? 'text-emerald-600' : 'text-red-500'">Rp {{ formatRupiah(cashChange < 0 ? 0 : cashChange) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex space-x-3">
+                        <button @click="isPaymentModalOpen = false" class="flex-1 py-2.5 border border-slate-300 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50">Batal</button>
+                        <button @click="processTransaction" :disabled="paymentMethod === 'Cash' && cashPaid < cartSubtotal" class="flex-1 py-2.5 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-500/20">
+                            Konfirmasi & Simpan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL NOTA / STRUK -->
+        <div v-if="isReceiptModalOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden p-6 space-y-4">
+                <div id="printable-receipt" class="font-mono text-xs space-y-3">
+                    <div class="text-center">
+                        <h2 class="font-bold text-sm">SinggahSini Kantin</h2>
+                        <p class="text-[10px] text-slate-500">Kantin Kampus Utama</p>
+                        <p class="text-[10px] text-slate-500">--------------------------------</p>
+                    </div>
+
+                    <div class="space-y-1 text-[10px]">
+                        <p>No. Nota : {{ activeReceipt.id }}</p>
+                        <p>Waktu    : {{ activeReceipt.date }}</p>
+                        <p>Kasir    : {{ activeReceipt.cashier }}</p>
+                        <p>Metode   : {{ activeReceipt.method }}</p>
+                    </div>
+
+                    <p class="text-[10px] text-slate-500">--------------------------------</p>
+
+                    <div class="space-y-1">
+                        <div v-for="item in activeReceipt.items" :key="item.id" class="flex justify-between text-[11px]">
+                            <span>{{ item.name }} x{{ item.qty }}</span>
+                            <span>Rp {{ formatRupiah(item.price * item.qty) }}</span>
+                        </div>
+                    </div>
+
+                    <p class="text-[10px] text-slate-500">--------------------------------</p>
+
+                    <div class="space-y-1 font-bold text-[11px]">
+                        <div class="flex justify-between">
+                            <span>TOTAL</span>
+                            <span>Rp {{ formatRupiah(activeReceipt.total) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-3 text-[10px] text-slate-500">
+                        <p>Terima kasih atas kunjungan Anda!</p>
+                        <p>SinggahSini - Nikmat & Bersahabat</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-2 pt-2">
+                    <button @click="isReceiptModalOpen = false" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">Tutup</button>
+                    <button @click="printReceipt" class="flex-1 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 flex items-center justify-center space-x-1">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>Cetak Struk</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL TAMBAH/EDIT PRODUK -->
+        <div v-if="isProductModalOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
+                <h3 class="font-bold text-sm text-slate-800">{{ editingProduct ? 'Edit Menu & Stok' : 'Tambah Menu Baru' }}</h3>
+                <form @submit.prevent="saveProduct" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Menu</label>
+                        <input type="text" v-model="productForm.name" required class="w-full px-3 py-2 border rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
+                        <select v-model="productForm.category" class="w-full px-3 py-2 border rounded-xl text-xs font-medium bg-white outline-none">
+                            <option value="Makanan">Makanan</option>
+                            <option value="Minuman">Minuman</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Harga (Rp)</label>
+                        <input type="number" v-model.number="productForm.price" required class="w-full px-3 py-2 border rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Stok Initial</label>
+                        <input type="number" v-model.number="productForm.stock" required class="w-full px-3 py-2 border rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
+
+                    <div class="flex justify-end space-x-2 pt-2">
+                        <button type="button" @click="isProductModalOpen = false" class="px-4 py-2 border rounded-xl text-xs font-bold text-slate-600">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20">Simpan Menu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- LOGIK VUE 3 -->
+    <script>
+        const { createApp, ref, computed, onMounted, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                // STATUS AWAL LOGIN DISETTING "FALSE" AGAR HALAMAN LOGIN MUNCUL PERTAMA KALI
+                const isLoggedIn = ref(false);
+                const activeUser = ref('Kasir Utama');
+                const loginForm = ref({ userType: 'Kasir Utama', pin: '' });
+
+                const currentTab = ref('pos');
+                const currentTabName = computed(() => {
+                    const names = {
+                        dashboard: 'Dashboard Analitik',
+                        pos: 'Kasir / Point of Sale',
+                        stok: 'Manajemen Stok & Menu',
+                        riwayat: 'Riwayat Transaksi',
+                        rekap: 'Rekapitulasi Penjualan'
+                    };
+                    return names[currentTab.value] || '';
+                });
+
+                const products = ref([
+                    { id: 1, name: 'Nasi Goreng Spesial', category: 'Makanan', price: 15000, stock: 25 },
+                    { id: 2, name: 'Mie Ayam Bakso', category: 'Makanan', price: 13000, stock: 18 },
+                    { id: 3, name: 'Ayam Geprek + Nasi', category: 'Makanan', price: 16000, stock: 4 },
+                    { id: 4, name: 'Soto Ayam Kantin', category: 'Makanan', price: 14000, stock: 12 },
+                    { id: 5, name: 'Es Teh Manis', category: 'Minuman', price: 4000, stock: 50 },
+                    { id: 6, name: 'Es Jeruk Peras', category: 'Minuman', price: 5000, stock: 30 },
+                    { id: 7, name: 'Jus Alpukat', category: 'Minuman', price: 10000, stock: 3 },
+                    { id: 8, name: 'Kopi Hitam', category: 'Minuman', price: 4000, stock: 20 },
+                ]);
+
+                const searchQuery = ref('');
+                const selectedCategory = ref('');
+                const cart = ref([]);
+
+                const transactions = ref([
+                    {
+                        id: 'TRX-891021',
+                        date: '2026-10-20 12:30',
+                        cashier: 'Kasir Utama',
+                        method: 'Cash',
+                        total: 34000,
+                        items: [
+                            { id: 1, name: 'Nasi Goreng Spesial', price: 15000, qty: 2 },
+                            { id: 5, name: 'Es Teh Manis', price: 4000, qty: 1 }
+                        ]
+                    }
+                ]);
+
+                const isPaymentModalOpen = ref(false);
+                const paymentMethod = ref('Cash');
+                const cashPaid = ref(0);
+
+                const isReceiptModalOpen = ref(false);
+                const activeReceipt = ref({});
+
+                const isProductModalOpen = ref(false);
+                const editingProduct = ref(null);
+                const productForm = ref({ name: '', category: 'Makanan', price: 0, stock: 0 });
+
+                const historySearch = ref('');
+                const currentTime = ref('');
+                const currentDate = ref('');
+
+                const updateClock = () => {
+                    const now = new Date();
+                    currentTime.value = now.toLocaleTimeString('id-ID');
+                    currentDate.value = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                };
+
+                onMounted(() => {
+                    updateClock();
+                    setInterval(updateClock, 1000);
+                    refreshIcons();
+                });
+
+                const refreshIcons = () => {
+                    nextTick(() => {
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    });
+                };
+
+                const navigate = (tab) => {
+                    currentTab.value = tab;
+                    refreshIcons();
+                    if (tab === 'dashboard') {
+                        nextTick(renderChart);
+                    }
+                };
+
+                const filteredProducts = computed(() => {
+                    return products.value.filter(p => {
+                        const matchQuery = p.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+                        const matchCat = !selectedCategory.value || p.category === selectedCategory.value;
+                        return matchQuery && matchCat;
+                    });
+                });
+
+                const lowStockProducts = computed(() => {
+                    return products.value.filter(p => p.stock <= 5);
+                });
+
+                const addToCart = (product) => {
+                    if (product.stock <= 0) {
+                        alert('Stok menu habis!');
+                        return;
+                    }
+                    const item = cart.value.find(c => c.id === product.id);
+                    if (item) {
+                        if (item.qty < product.stock) {
+                            item.qty++;
+                        } else {
+                            alert('Stok tidak mencukupi!');
+                        }
+                    } else {
+                        cart.value.push({ ...product, qty: 1 });
+                    }
+                };
+
+                const updateQty = (index, delta) => {
+                    const item = cart.value[index];
+                    const prod = products.value.find(p => p.id === item.id);
+                    if (delta > 0 && item.qty >= prod.stock) {
+                        alert('Stok tidak cukup!');
+                        return;
+                    }
+                    item.qty += delta;
+                    if (item.qty <= 0) {
+                        cart.value.splice(index, 1);
+                    }
+                };
+
+                const removeFromCart = (index) => {
+                    cart.value.splice(index, 1);
+                };
+
+                const clearCart = () => {
+                    cart.value = [];
+                };
+
+                const cartSubtotal = computed(() => {
+                    return cart.value.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                });
+
+                const cashChange = computed(() => {
+                    return cashPaid.value - cartSubtotal.value;
+                });
+
+                const openPaymentModal = () => {
+                    cashPaid.value = cartSubtotal.value;
+                    isPaymentModalOpen.value = true;
+                };
+
+                const processTransaction = () => {
+                    cart.value.forEach(item => {
+                        const prod = products.value.find(p => p.id === item.id);
+                        if (prod) prod.stock -= item.qty;
+                    });
+
+                    const newTrx = {
+                        id: 'TRX-' + Math.floor(100000 + Math.random() * 900000),
+                        date: new Date().toISOString().slice(0, 10) + ' ' + currentTime.value.slice(0, 5),
+                        cashier: activeUser.value,
+                        method: paymentMethod.value,
+                        total: cartSubtotal.value,
+                        items: [...cart.value]
+                    };
+
+                    transactions.value.unshift(newTrx);
+                    activeReceipt.value = newTrx;
+                    cart.value = [];
+                    isPaymentModalOpen.value = false;
+                    isReceiptModalOpen.value = true;
+                    refreshIcons();
+                };
+
+                const showReceiptModal = (trx) => {
+                    activeReceipt.value = trx;
+                    isReceiptModalOpen.value = true;
+                    refreshIcons();
+                };
+
+                const printReceipt = () => {
+                    window.print();
+                };
+
+                const openProductModal = (product = null) => {
+                    editingProduct.value = product;
+                    if (product) {
+                        productForm.value = { ...product };
+                    } else {
+                        productForm.value = { name: '', category: 'Makanan', price: 0, stock: 10 };
+                    }
+                    isProductModalOpen.value = true;
+                };
+
+                const saveProduct = () => {
+                    if (editingProduct.value) {
+                        const idx = products.value.findIndex(p => p.id === editingProduct.value.id);
+                        if (idx !== -1) products.value[idx] = { ...productForm.value, id: editingProduct.value.id };
+                    } else {
+                        const newId = products.value.length ? Math.max(...products.value.map(p => p.id)) + 1 : 1;
+                        products.value.push({ ...productForm.value, id: newId });
+                    }
+                    isProductModalOpen.value = false;
+                };
+
+                const deleteProduct = (id) => {
+                    if (confirm('Apakah Anda yakin ingin menghapus menu ini?')) {
+                        products.value = products.value.filter(p => p.id !== id);
+                    }
+                };
+
+                const todayIncome = computed(() => {
+                    return transactions.value.reduce((sum, t) => sum + t.total, 0);
+                });
+
+                const todayTransactionsCount = computed(() => transactions.value.length);
+
+                const todayItemsSold = computed(() => {
+                    return transactions.value.reduce((sum, t) => {
+                        return sum + t.items.reduce((iSum, item) => iSum + item.qty, 0);
+                    }, 0);
+                });
+
+                const totalIncomeAll = computed(() => todayIncome.value);
+
+                const filteredTransactions = computed(() => {
+                    return transactions.value.filter(t => {
+                        return t.id.toLowerCase().includes(historySearch.value.toLowerCase()) ||
+                               t.cashier.toLowerCase().includes(historySearch.value.toLowerCase());
+                    });
+                });
+
+                const handleLogin = () => {
+                    activeUser.value = loginForm.value.userType;
+                    isLoggedIn.value = true;
+                    refreshIcons();
+                };
+
+                const handleLogout = () => {
+                    isLoggedIn.value = false;
+                };
+
+                const formatRupiah = (num) => {
+                    return new Intl.NumberFormat('id-ID').format(num || 0);
+                };
+
+                let salesChartInstance = null;
+                const renderChart = () => {
+                    const ctx = document.getElementById('salesChart');
+                    if (!ctx) return;
+
+                    if (salesChartInstance) {
+                        salesChartInstance.destroy();
+                    }
+
+                    salesChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+                            datasets: [{
+                                label: 'Omzet Penjualan (Rp)',
+                                data: [450000, 520000, 480000, 610000, 750000, 890000, todayIncome.value],
+                                borderColor: '#ea580c',
+                                backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                };
+
+                return {
+                    isLoggedIn, activeUser, loginForm, handleLogin, handleLogout,
+                    currentTab, currentTabName, navigate,
+                    products, searchQuery, selectedCategory, filteredProducts, lowStockProducts,
+                    cart, addToCart, updateQty, removeFromCart, clearCart, cartSubtotal,
+                    isPaymentModalOpen, paymentMethod, cashPaid, cashChange, openPaymentModal, processTransaction,
+                    isReceiptModalOpen, activeReceipt, showReceiptModal, printReceipt,
+                    isProductModalOpen, editingProduct, productForm, openProductModal, saveProduct, deleteProduct,
+                    transactions, historySearch, filteredTransactions,
+                    todayIncome, todayTransactionsCount, todayItemsSold, totalIncomeAll,
+                    currentTime, currentDate, formatRupiah
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

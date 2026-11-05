@@ -1,0 +1,72 @@
+# Data Menu Warung/Kantin
+menu = {
+    1: {"nama": "Nasi Goreng", "harga": 15000},
+    2: {"nama": "Mie Ayam", "harga": 12000},
+    3: {"nama": "Es Teh Manis", "harga": 5000},
+    4: {"nama": "Kopi Hitam", "harga": 4000},
+    5: {"nama": "Gorengan", "harga": 1000}
+}
+
+keranjang = []
+
+def tampilkan_menu():
+    print("\n=== MENU WARUNG / KANTIN ===")
+    for key, item in menu.items():
+        print(f"{key}. {item['nama']} - Rp {item['harga']:,}")
+    print("============================")
+
+def proses_penjualan():
+    tampilkan_menu()
+    total_bayar = 0
+    keranjang.clear()
+    
+    while True:
+        pilihan = input("\nPilih nomor menu (ketik '0' jika selesai): ")
+        if pilihan == '0':
+            break
+        
+        if pilihan.isdigit() and int(pilihan) in menu:
+            nomor = int(pilihan)
+            qty = int(input(f"Jumlah {menu[nomor]['nama']}: "))
+            subtotal = menu[nomor]['harga'] * qty
+            
+            keranjang.append({
+                "nama": menu[nomor]['nama'],
+                "harga": menu[nomor]['harga'],
+                "qty": qty,
+                "subtotal": subtotal
+            })selesai
+            print(f"-> Ditambahkan: {menu[nomor]['nama']} x{qty} (Rp {subtotal:,})")
+        else:
+            print("Pilihan menu tidak valid!")
+            
+    if not keranjang:
+        print("Transaksi dibatalkan.")
+        return
+
+    # Hitung Total
+    total_bayar = sum(item['subtotal'] for item in keranjang)
+    
+    print("\n" + "="*30)
+    print("        STRUK PEMBAYARAN       ")
+    print("="*30)
+    for item in keranjang:
+        print(f"{item['nama']} x{item['qty']} = Rp {item['subtotal']:,}")
+    print("-"*30)
+    print(f"TOTAL BAYAR : Rp {total_bayar:,}")
+    print("="*30)
+    s
+    # Pembayaran
+    while True:
+        bayar = int(input("Uang Tunai   : Rp "))
+        if bayar >= total_bayar:
+            kembalian = bayar - total_bayar
+            print(f"Kembalian    : Rp {kembalian:,}")
+            print("\nTerima kasih telah berbelanja!")
+            break
+        else:
+            print("Uang kurang! Masukkan jumlah yang sesuai.")
+
+# Jalankan Program
+if __name__ == "__main__":
+    proses_penjualan()

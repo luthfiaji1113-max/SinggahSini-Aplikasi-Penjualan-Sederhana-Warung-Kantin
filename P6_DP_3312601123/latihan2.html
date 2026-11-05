@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Latihan 2</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- CAROUSEL -->
+<div id="carouselExampleIndicators" class="carousel slide mt-4" data-bs-ride="carousel">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="https://picsum.photos/1200/400?random=1" class="d-block w-100" alt="Slide 1">
+      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+        <h5>Selamat Datang</h5>
+        <p>Contoh gambar pertama pada carousel Bootstrap.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="https://picsum.photos/1200/400?random=2" class="d-block w-100" alt="Slide 2">
+      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+        <h5>Slide Kedua</h5>
+        <p>Tampilan responsif dan berganti otomatis.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="https://picsum.photos/1200/400?random=3" class="d-block w-100" alt="Slide 3">
+      <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+        <h5>Slide Ketiga</h5>
+        <p>Mudah dikustomisasi untuk promosi produk atau acara.</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- SECTION CARDS -->
+<div class="container my-5">
+  <h2 class="text-center mb-4">Produk Unggulan</h2>
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://picsum.photos/300/200?random=4" class="card-img-top" alt="Produk 1">
+        <div class="card-body text-center">
+          <h5 class="card-title">Produk 1</h5>
+          <p class="card-text">Deskripsi singkat produk pertama.</p>
+          <a href="#" class="btn btn-primary">Lihat Detail</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://picsum.photos/300/200?random=5" class="card-img-top" alt="Produk 2">
+        <div class="card-body text-center">
+          <h5 class="card-title">Produk 2</h5>
+          <p class="card-text">Deskripsi singkat produk kedua.</p>
+          <a href="#" class="btn btn-success">Lihat Detail</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <img src="https://picsum.photos/300/200?random=6" class="card-img-top" alt="Produk 3">
+        <div class="card-body text-center">
+          <h5 class="card-title">Produk 3</h5>
+          <p class="card-text">Deskripsi singkat produk ketiga.</p>
+          <a href="#" class="btn btn-warning">Lihat Detail</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COLLAPSE FAQ -->
+<div class="container mb-5">
+  <h2 class="text-center mb-4">Pertanyaan Umum (FAQ)</h2>
+  <p>
+    <button class="btn btn-outline-primary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+      Apa itu Bootstrap?
+    </button>
+  </p>
+  <div class="collapse" id="faq1">
+    <div class="card card-body">
+      Bootstrap adalah framework CSS yang membantu membuat tampilan website responsif dengan cepat.
+    </div>
+  </div>
+  <p>
+    <button class="btn btn-outline-secondary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+      Apa fungsi Carousel di atas?
+    </button>
+  </p>
+  <div class="collapse" id="faq2">
+    <div class="card card-body">
+      Carousel digunakan untuk menampilkan beberapa gambar atau konten secara bergantian dalam satu area.
+    </div>
+  </div>
+</div>
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>  
+    </body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SinggahSini</title>
+<!-- Bootstrap 6.0.0-alpha.1 (butuh Chrome/Edge 130+, Firefox 132+, Safari 18+) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- ===================== CSS ===================== -->
+<style>
+ /* CSS tambahan minimal (di luar yang disediakan Bootstrap) */
+body{min-height:100vh}
+body.gray{background:#d9d9d9}
+.logo{width:48px;height:48px;background:#fff}
+.brand,.card-menu,[role=button]{cursor:pointer}
+#nav .nav-link{color:#fff}
+#nav .nav-link.on{text-decoration:underline;text-underline-offset:8px}
+.ph{height:174px}
+.pic{aspect-ratio:1/.88}
+.badge-cart{background:#fff;color:#000}
+/* Perbaikan: teks header tampil putih di atas latar hitam */
+.app-header{color:#fff}
+.app-header .brand,.app-header .btn-text,.app-header #login{color:#fff!important}
+.app-header .badge-cart{color:#000!important;font-size:.75rem;line-height:1.25rem;min-width:1.25rem;height:1.25rem;padding:0 .35rem}
+/* Foto menu */
+.ph-img{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.ph-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph-img .emo{font-size:5.5rem;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
+.ph-img .emo.big{font-size:13rem}
+.toast-container{position:fixed;left:50%;bottom:0;transform:translateX(-50%);padding:1rem;z-index:1090}
+
+/* ===== Tema warna (oranye hangat + hijau toska) ===== */
+:root{--brand:#e85d04;--brand-d:#c2410c;--brand-l:#ffe8cc;--teal:#0f766e;--cream:#fff8ef;--ink:#3b2a20}
+body{background:var(--cream);color:var(--ink)}
+body.gray{background:#fde7c8}
+.app-header{background:linear-gradient(90deg,#d9480f,#f59f00)!important;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.logo{border-radius:12px}
+nav[data-bs-theme="dark"]{background:var(--teal)!important}
+#nav .nav-link.on{text-decoration-color:#ffd166}
+.app-header .btn-solid.theme-secondary{background:#fff3e0!important;color:var(--brand-d)!important;border-color:transparent!important}
+.app-header .badge-cart{background:#fff!important;color:var(--brand-d)!important}
+
+/* tombol */
+.btn-solid.theme-inverse{background:var(--brand)!important;border-color:var(--brand)!important;color:#fff!important}
+.btn-solid.theme-inverse:hover{background:var(--brand-d)!important}
+.btn-subtle.theme-secondary{background:var(--brand-l)!important;color:#9a3412!important;border-color:transparent!important}
+.btn-outline.theme-inverse,.btn-outline.theme-secondary{border:1.5px solid var(--brand)!important;color:var(--brand)!important;background:#fff!important}
+.card-menu .btn.bg-white{background:var(--brand)!important;color:#fff!important}
+
+/* kartu & panel */
+.card.rounded-9{box-shadow:0 6px 20px rgba(232,93,4,.14)}
+.card-menu{box-shadow:0 4px 14px rgba(0,0,0,.1);transition:transform .15s,box-shadow .15s}
+.card-menu:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(232,93,4,.25)}
+.card-menu .card-body{background:#fffaf4!important}
+.bg-2{background:#ffe8cc!important}
+.bg-subtle-secondary{background:var(--brand-l)!important}
+.border-bottom{border-color:#f5c9a0!important}
+.price-tag{color:var(--brand);font-weight:700}
+.price-big{color:var(--brand)}
+.stok-pill{background:#dcfce7!important;color:#166534!important}
+.cat-pill{background:var(--brand-l)!important;color:#9a3412!important}
+.fg-danger{color:#dc2626!important}
+.fg-secondary{color:#8a6d5a!important}
+.table thead th{color:#7c2d12}
+.form-control:focus{border-color:var(--brand)!important;box-shadow:0 0 0 .2rem rgba(232,93,4,.2)!important}
+.toast{background:#15803d!important;color:#fff!important;border-radius:12px}
+
+/* kartu statistik rekap */
+.stat-card{border:0!important;color:#fff}
+.stat-card small,.stat-card .fg-secondary{color:rgba(255,255,255,.92)!important}
+.row>.col:nth-child(1)>.stat-card{background:linear-gradient(135deg,#f97316,#fb923c)}
+.row>.col:nth-child(2)>.stat-card{background:linear-gradient(135deg,#0f766e,#14b8a6)}
+.row>.col:nth-child(3)>.stat-card{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+</style>
+</head>
+<body>
+<!-- ===================== HTML ===================== -->
+
+<!-- Header -->
+<header class="app-header d-flex flex-wrap align-items-center gap-5 px-5 py-3 bg-black" data-bs-theme="dark">
+ <div class="d-flex align-items-center gap-5">
+  <div class="logo"></div><span class="brand fs-2xl fw-bold" onclick="go('menu')">SinggahSini</span>
+ </div>
+ <form class="flex-grow-1 mx-5" style="max-width:740px" onsubmit="return false">
+  <div class="input-group">
+   <input id="q" class="form-control" placeholder="Cari menu, misal:" oninput="cari(this.value)">
+   <button class="btn-solid theme-secondary" type="button" aria-label="Cari"><i class="bi bi-search"></i></button>
+  </div>
+ </form>
+ <div class="d-flex align-items-center gap-7 ms-auto">
+  <button class="btn-text position-relative fs-3xl p-0" aria-label="Keranjang" onclick="go('keranjang')">
+   <i class="bi bi-cart"></i><span id="badge" class="badge badge-cart rounded-pill position-absolute top-0 start-100 translate-middle"></span>
+  </button>
+  <button id="login" class="btn-text fw-bold" onclick="masuk()">Masuk</button>
+ </div>
+</header>
+
+<!-- Navigasi -->
+<nav data-bs-theme="dark"><ul id="nav" class="nav justify-content-center gap-12 py-1"></ul></nav>
+
+<main id="view" class="container py-7"></main>
+
+<div class="toast-container"><div id="toast" class="toast theme-inverse" role="status"><div class="toast-body"></div></div></div>
+
+<!-- Bootstrap 6: JavaScript wajib type="module" (tidak ada lagi global `bootstrap`) -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+/* ---------- Foto menu ----------
+   Taruh foto asli di folder img/ dengan nama sesuai kode, mis. img/MKN-01.jpg.
+   Kalau tidak ada, dipakai foto asli dari Wikipedia (butuh internet), lalu emoji. */
+const EMO={'MKN-01':'🍛','MKN-02':'🍝','MKN-03':'🍗','MKN-04':'🍖','MKN-06':'🍜','MKN-07':'🍜','MKN-08':'🍚','MKN-09':'🍚','MKN-10':'🥗','MKN-11':'🥘','MKN-12':'🍢','MKN-13':'🥡','MKN-14':'🍝','MKN-15':'🐟','MKN-16':'🥣','MNM-01':'🧋','MNM-02':'🍊','MNM-03':'☕','CML-01':'🥟','CML-02':'🍪','CML-04':'🍌','CML-05':'🍟'};
+const BG={Makanan:'linear-gradient(135deg,#ffd9a0,#f4a261)',Minuman:'linear-gradient(135deg,#bde0fe,#6fb1e6)',Camilan:'linear-gradient(135deg,#ffd6e0,#f28fad)'};
+const bgc=p=>BG[p.c];
+const WIKI={"MKN-01": "en/Nasi_goreng", "MKN-02": "en/Mie_goreng", "MKN-03": "en/Ayam_geprek", "MKN-04": "en/Ayam_bakar", "MKN-06": "en/Bakso", "MKN-07": "en/Mie_ayam", "MKN-08": "en/Nasi_uduk", "MKN-09": "en/Nasi_kuning", "MKN-10": "en/Gado-gado", "MKN-11": "en/Rendang", "MKN-12": "en/Satay", "MKN-13": "en/Cap_cai", "MKN-14": "en/Char_kway_teow", "MKN-15": "en/Pecel_lele", "MKN-16": "en/Bubur_ayam", "MNM-01": "en/Iced_tea", "MNM-02": "en/Orange_juice", "MNM-03": "en/Iced_coffee", "CML-01": "en/Dim_sum", "CML-02": "en/Cookie", "CML-04": "en/Pisang_goreng", "CML-05": "en/French_fries"};
+let FC={};try{FC=JSON.parse(localStorage.getItem('fotoCache')||'{}')}catch(e){}
+/* Urutan foto: 1) img/KODE.jpg milik sendiri  2) foto asli dari Wikipedia  3) ilustrasi emoji */
+const foto=(p,big)=>{const w=FC[p.id];return `<div class="ph-img"><span class="emo ${big?'big':''}">${EMO[p.id]||'🍽️'}</span><img data-id="${p.id}" ${w?'data-t="w"':''} src="${w||'img/'+p.id+'.jpg'}" alt="${p.n}" referrerpolicy="no-referrer" onerror="fotoErr(this)"></div>`};
+async function getWiki(id){
+ if(id in FC)return FC[id];const w=WIKI[id];if(!w)return null;
+ try{const [l,t]=w.split('/'),r=await fetch(`https://${l}.wikipedia.org/api/rest_v1/page/summary/${t}`),j=await r.json();
+  const u=j.thumbnail&&j.thumbnail.source;FC[id]=u?u.replace(/\/\d+px-/,'/500px-'):null}catch(e){return null}
+ try{localStorage.setItem('fotoCache',JSON.stringify(FC))}catch(e){}return FC[id]}
+function fotoErr(img){
+ if(img.dataset.t==='w'){img.remove();return}
+ img.dataset.t='w';getWiki(img.dataset.id).then(u=>u?img.src=u:img.remove())}
+
+/* ---------- Data ---------- */
+const P=[
+ {id:'MKN-01',n:'Nasi Goreng',c:'Makanan',p:15000,s:18,s0:18,sold:0,base:10,d:'Nasi goreng dengan telur, ayam suwir, dan kerupuk.'},
+ {id:'MKN-02',n:'Mie Goreng',c:'Makanan',p:14000,s:15,s0:15,sold:0,base:0,d:'Mie goreng bumbu kecap dengan sayur dan telur.'},
+ {id:'MKN-03',n:'Ayam Geprek',c:'Makanan',p:18000,s:14,s0:14,sold:0,base:0,d:'Ayam crispy digeprek sambal bawang pedas, disajikan dengan nasi.'},
+ {id:'MKN-04',n:'Nasi Ayam Bakar',c:'Makanan',p:20000,s:12,s0:12,sold:0,base:0,d:'Ayam bakar bumbu kecap, nasi hangat, lalapan, dan sambal.'},
+ {id:'MKN-06',n:'Bakso Urat',c:'Makanan',p:15000,s:20,s0:20,sold:0,base:0,d:'Bakso urat sapi dengan mie, sawi, dan kuah kaldu gurih.'},
+ {id:'MKN-07',n:'Mie Ayam',c:'Makanan',p:13000,s:18,s0:18,sold:0,base:0,d:'Mie ayam topping ayam cincang dan pangsit goreng.'},
+ {id:'MKN-08',n:'Nasi Uduk',c:'Makanan',p:14000,s:10,s0:10,sold:0,base:0,d:'Nasi gurih santan dengan telur dadar, bihun, dan bawang goreng.'},
+ {id:'MKN-09',n:'Nasi Kuning',c:'Makanan',p:14000,s:10,s0:10,sold:0,base:0,d:'Nasi kuning dengan abon, telur, dan sambal kacang.'},
+ {id:'MKN-10',n:'Gado-gado',c:'Makanan',p:13000,s:12,s0:12,sold:0,base:0,d:'Sayuran rebus, tahu, tempe, dan lontong dengan saus kacang.'},
+ {id:'MKN-11',n:'Nasi Rendang',c:'Makanan',p:22000,s:9,s0:9,sold:0,base:0,d:'Rendang sapi empuk dengan nasi, daun singkong, dan sambal hijau.'},
+ {id:'MKN-12',n:'Sate Ayam',c:'Makanan',p:17000,s:15,s0:15,sold:0,base:0,d:'Sepuluh tusuk sate ayam bumbu kacang dengan lontong.'},
+ {id:'MKN-13',n:'Nasi Capcay',c:'Makanan',p:16000,s:11,s0:11,sold:0,base:0,d:'Nasi dengan capcay sayur kuah kental dan telur ceplok.'},
+ {id:'MKN-14',n:'Kwetiau Goreng',c:'Makanan',p:17000,s:13,s0:13,sold:0,base:0,d:'Kwetiau goreng seafood dengan telur dan sawi.'},
+ {id:'MKN-15',n:'Nasi Pecel Lele',c:'Makanan',p:16000,s:12,s0:12,sold:0,base:0,d:'Lele goreng garing, nasi, lalapan, dan sambal terasi.'},
+ {id:'MKN-16',n:'Bubur Ayam',c:'Makanan',p:12000,s:14,s0:14,sold:0,base:0,d:'Bubur ayam dengan cakwe, kerupuk, dan kuah kuning.'},
+ {id:'MNM-01',n:'Teh Obeng',c:'Minuman',p:7000,s:10,s0:10,sold:0,base:10,d:'Teh manis dingin segar.'},
+ {id:'MNM-02',n:'Es Jeruk',c:'Minuman',p:8000,s:20,s0:20,sold:0,base:0,d:'Jeruk peras segar dengan es batu.'},
+ {id:'MNM-03',n:'Kopi Susu',c:'Minuman',p:12000,s:18,s0:18,sold:0,base:0,d:'Kopi susu gula aren, dingin atau panas.'},
+ {id:'CML-01',n:'Dimsum',c:'Camilan',p:5000,s:16,s0:16,sold:0,base:0,d:'Dimsum ayam kukus, isi tiga.'},
+ {id:'CML-02',n:'Cookies',c:'Camilan',p:3000,s:12,s0:12,sold:0,base:0,d:'Kue kering cokelat renyah.'},
+ {id:'CML-04',n:'Pisang Goreng',c:'Camilan',p:6000,s:15,s0:15,sold:0,base:0,d:'Pisang goreng tepung krispi, taburan keju atau cokelat.'},
+ {id:'CML-05',n:'Kentang Goreng',c:'Camilan',p:10000,s:14,s0:14,sold:0,base:0,d:'Kentang goreng renyah dengan saus sambal dan mayones.'}
+];
+const st={cart:[],mode:'Makan di tempat',pay:'Tunai',note:'',cat:'Semua',q:'',hist:[],admin:false,dq:1,dw:'',per:'Harian'};
+const $=s=>document.querySelector(s), prod=id=>P.find(x=>x.id===id);
+const rp=n=>'Rp.'+n.toLocaleString('id-ID');
+const MAXD=p=>Math.min(5,p.s);
+const total=()=>st.cart.reduce((a,i)=>a+prod(i.id).p*i.q,0);
+const count=()=>st.cart.reduce((a,i)=>a+i.q,0);
+const msg=(q,p)=>q<1?'Jumlah harus lebih dari 0':q>p.s?'Maaf, stok hanya tersedia '+p.s:'';
+/* Toast v6: cukup toggle class .show (animasi ditangani CSS) */
+function toast(t){const e=$('#toast');e.querySelector('.toast-body').textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2000)}
+function go(h){location.hash=h}
+
+/* ---------- Aksi ---------- */
+function cari(v){st.q=v;if(!location.hash.startsWith('#menu'))go('menu');else render()}
+function masuk(){st.admin=!st.admin;go(st.admin?'kasir':'menu');render()}
+function setCat(c){st.cat=c;render()}
+function tambah(id,e){e.stopPropagation();const p=prod(id),i=st.cart.find(x=>x.id===id);
+ if((i?i.q:0)+1>p.s)return toast('Maaf, stok hanya tersedia '+p.s);
+ i?i.q++:st.cart.push({id,q:1,w:''});toast(p.n+' ditambahkan ke pesanan');render()}
+function chg(id,d){const i=st.cart.find(x=>x.id===id),p=prod(id),nq=i.q+d;if(nq<0)return;i.w=msg(nq,p);i.q=Math.min(nq,p.s);render()}
+function del(id){st.cart=st.cart.filter(x=>x.id!==id);render()}
+function dchg(d,id){const p=prod(id),nq=st.dq+d;if(nq<0)return;
+ st.dw=nq<1?'Jumlah harus lebih dari 0':nq>p.s?'Maaf, stok hanya tersedia '+p.s:nq>5?'Maksimal pembelian 5 per pesanan':'';
+ st.dq=Math.min(nq,MAXD(p));render()}
+function dAdd(id,now){const p=prod(id);if(st.dq<1){st.dw='Jumlah harus lebih dari 0';return render()}
+ const i=st.cart.find(x=>x.id===id);
+ if((i?i.q:0)+st.dq>p.s){st.dw='Maaf, stok hanya tersedia '+p.s;return render()}
+ i?i.q+=st.dq:st.cart.push({id,q:st.dq,w:''});
+ if(now)go('kasir');else{toast('Ditambahkan ke keranjang');render()}}
+function simpan(){if(!st.cart.length)return toast('Keranjang masih kosong');toast('Pesanan disimpan');go('kasir')}
+function bayar(){
+ if(!st.cart.length)return toast('Belum ada pesanan');
+ if(st.cart.some(i=>i.q<1||i.q>prod(i.id).s))return toast('Periksa jumlah pesanan terlebih dahulu');
+ const items=st.cart.map(i=>({n:prod(i.id).n,q:i.q}));
+ st.cart.forEach(i=>{const p=prod(i.id);p.s-=i.q;p.sold+=i.q});
+ st.hist.unshift({t:new Date().toLocaleString('id-ID'),items,mode:st.mode,pay:st.pay,total:total(),note:st.note});
+ st.cart=[];st.note='';toast('Pembayaran berhasil');go('riwayat')}
+
+/* ---------- Potongan tampilan ---------- */
+const row=(i,trash)=>{const p=prod(i.id);return `<div class="mb-5">
+ <div class="d-flex justify-content-between fw-bold"><span>${p.n}</span><span>${rp(p.p*i.q)}${trash?` <i class="bi bi-trash ms-3" role="button" onclick="del('${i.id}')"></i>`:''}</span></div>
+ <div class="d-flex justify-content-between align-items-center"><span>${rp(p.p)}/porsi</span>
+  <div class="d-flex align-items-center gap-3"><button class="btn-outline theme-inverse btn-sm" onclick="chg('${i.id}',-1)">–</button><span>${i.q}</span><button class="btn-outline theme-inverse btn-sm" onclick="chg('${i.id}',1)">+</button></div></div>
+ ${i.w?`<div class="text-end small fw-bold fg-danger">${i.w}</div>`:''}</div>`};
+const noteBox=()=>`<div class="input-group my-5"><span class="input-group-text"><i class="bi bi-journal-text"></i></span>
+ <input class="form-control" placeholder="Tambah Catatan Pesanan" value="${st.note.replace(/"/g,'&quot;')}" oninput="st.note=this.value"></div>`;
+const subtotal=()=>`<div class="d-flex justify-content-between fw-bold fs-xl mt-7"><span>Subtotal</span><span>${rp(total())}</span></div>`;
+const emptyCart='<p class="text-center fg-secondary py-7">Belum ada pesanan. Pilih menu dulu, lalu tekan +.</p>';
+
+/* ---------- Halaman ---------- */
+const V={
+menu(){
+ const q=st.q.toLowerCase(),L=P.filter(p=>(st.cat==='Semua'||p.c===st.cat)&&p.n.toLowerCase().includes(q));
+ return `<h1 class="fs-4xl fw-bold">Daftar Menu</h1>
+ <div class="d-flex flex-wrap gap-5 my-7">${['Semua','Makanan','Minuman','Camilan'].map(c=>`<button class="btn-sm rounded-pill px-7 ${c===st.cat?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="setCat('${c}')">${c}</button>`).join('')}</div>
+ <div class="row row-cols-1 md:row-cols-2 lg:row-cols-3 g-7">${L.map(p=>`<div class="col"><article class="card card-menu border-0 rounded-9 overflow-hidden h-100" onclick="go('detail/${p.id}')">
+  <div class="ph" style="background:${bgc(p)}">${foto(p)}</div>
+  <div class="card-body bg-subtle-secondary position-relative p-7"><small>${p.c}</small><h5 class="fw-bold mb-1">${p.n}</h5><span class="price-tag">${rp(p.p)}</span>
+   <button class="btn bg-white fs-xl fw-bold position-absolute bottom-0 end-0 m-5 px-5 py-1" aria-label="Tambah ${p.n}" onclick="tambah('${p.id}',event)">+</button></div></article></div>`).join('')||'<p class="fg-secondary">Menu tidak ditemukan. Coba kata kunci lain.</p>'}</div>
+ <p class="small fg-secondary mt-7">Klik tombol + untuk menambahkan menu ke pesanan.</p>`},
+
+detail(id){const p=prod(id);if(!p)return '<p>Menu tidak ditemukan.</p>';
+ return `<a class="small d-inline-block mb-3 text-decoration-none" role="button" onclick="go('menu')">← Menu / ${p.n}</a>
+ <div class="row g-7 lg:g-12"><div class="col lg:col-7"><span class="badge badge-subtle theme-secondary rounded-pill px-5 py-3 mb-5 cat-pill">${p.c}</span>
+  <div class="pic rounded-9 overflow-hidden" style="background:${bgc(p)}">${foto(p,1)}</div></div>
+ <div class="col lg:col-5"><div class="bg-2 rounded-9 p-7 lg:p-12">
+  <div class="fs-lg">Detail Produk</div><h2 class="fs-3xl fw-bold mb-0">${p.n}</h2><em class="d-block mb-5">${p.id}</em>
+  <div class="fs-4xl fw-bold mb-5 price-big">Rp. ${p.p.toLocaleString('id-ID')}</div>
+  <div class="fs-lg">Stok:</div><span class="badge badge-subtle theme-secondary rounded-pill px-5 py-3 fs-md stok-pill"><i class="bi bi-box-seam"></i> ${p.s} tersisa</span>
+  <h5 class="fw-bold fg-secondary mt-7">DESKRIPSI</h5><p class="small">${p.d}</p>
+  <div class="d-flex align-items-center gap-5 my-7"><span class="fw-bold fg-secondary">JUMLAH</span>
+   <div class="d-flex align-items-center justify-content-between bg-subtle-secondary rounded-pill px-5 py-1" style="width:125px"><button class="btn-text btn-sm p-0" onclick="dchg(-1,'${id}')">—</button><span>${st.dq}</span><button class="btn-text btn-sm p-0" onclick="dchg(1,'${id}')">+</button></div>
+   <small class="fg-secondary">maks. ${MAXD(p)}</small></div>
+  ${st.dw?`<div class="small fw-bold fg-danger mb-5">${st.dw}</div>`:''}
+  <div class="d-flex flex-wrap gap-5"><button class="btn-solid theme-inverse rounded-pill px-7 py-3" ${p.s<1?'disabled':''} onclick="dAdd('${id}')"><i class="bi bi-cart"></i> Tambah ke Keranjang</button>
+   <button class="btn-subtle theme-secondary rounded-pill px-7 py-3" ${p.s<1?'disabled':''} onclick="dAdd('${id}',1)">Pesan Sekarang</button></div>
+ </div></div></div>`},
+
+kasir(){return `<div class="row justify-content-center"><div class="col md:col-9 lg:col-6 xl:col-5"><div class="card border-0 rounded-9 p-7">
+ <h2 class="fw-bold fs-2xl mb-0">Pesanan Saat Ini</h2><div class="fs-lg mb-5">${count()} item</div>
+ <div class="btn-group w-100 mb-5">${['Makan di tempat','Bungkus'].map(m=>`<button class="fw-bold ${m===st.mode?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="st.mode='${m}';render()">${m}</button>`).join('')}</div>
+ ${st.cart.map(i=>row(i)).join('')||emptyCart}${subtotal()}${noteBox()}<hr>
+ <h6 class="fw-bold">Metode Pembayaran</h6>
+ <div class="row row-cols-3 g-3 mb-5">${[['Tunai','cash-coin'],['Qris','qr-code'],['Transfer','bank']].map(([m,ic])=>`<div class="col"><button class="w-100 d-flex flex-column align-items-center py-3 fw-bold ${m===st.pay?'btn-solid theme-inverse':'btn-outline theme-secondary'}" onclick="st.pay='${m}';render()"><i class="bi bi-${ic} fs-2xl"></i>${m}</button></div>`).join('')}</div>
+ <button class="btn-solid theme-inverse w-100 py-5 fs-xl fw-bold" onclick="bayar()">Bayar Sekarang</button></div></div></div>`},
+
+keranjang(){return `<div class="row g-7"><div class="col lg:col-5"><div class="card border-0 rounded-9 p-7 h-100" style="min-height:640px">
+ <h2 class="fs-2xl fw-bold"><i class="bi bi-cart"></i> Keranjang Saya</h2><div class="fs-lg border-bottom pb-3 mb-5">${count()} item</div>
+ ${st.cart.map(i=>row(i,1)).join('')||emptyCart}
+ <div class="mt-auto">${subtotal()}${noteBox()}<hr><button class="btn-solid theme-inverse w-100 py-5 fs-xl fw-bold" onclick="simpan()">Simpan Pesanan Saya</button></div></div></div>
+ <div class="col lg:col-7"><div class="card border-0 p-7">
+  <div class="d-flex align-items-center gap-5 border-bottom pb-5 mb-7"><i class="bi bi-box-seam fs-4xl"></i><h2 class="fw-bold mb-0 flex-grow-1">Ringkasan Stok</h2>
+   <small class="fg-secondary">Terakhir diupdate<br>${new Date().toLocaleString('id-ID')}</small></div>
+  <div class="table-responsive"><table class="table table-bordered align-middle text-center mb-0"><thead class="bg-2"><tr><th class="text-start">Produk</th><th>Stok Sebelum</th><th>Stok Terjual</th><th>Stok Setelah</th></tr></thead>
+  <tbody>${P.map(p=>`<tr><td class="text-start">${p.n}</td><td>${p.s0}</td><td>${p.sold}</td><td>${p.s}</td></tr>`).join('')}</tbody></table></div></div></div></div>`},
+
+riwayat(){return `<h1 class="fs-4xl fw-bold mb-7">Riwayat Transaksi</h1><div class="table-responsive"><table class="table table-striped align-middle"><thead class="bg-2"><tr><th>Waktu</th><th>Pesanan</th><th>Jenis</th><th>Bayar</th><th>Total</th></tr></thead><tbody>
+ ${st.hist.map(h=>`<tr><td>${h.t}</td><td>${h.items.map(i=>i.n+' ×'+i.q).join(', ')}${h.note?'<br><small class="fg-secondary">Catatan: '+h.note.replace(/</g,'&lt;')+'</small>':''}</td><td>${h.mode}</td><td>${h.pay}</td><td class="fw-bold">${rp(h.total)}</td></tr>`).join('')||'<tr><td colspan="5" class="text-center fg-secondary py-12">Belum ada transaksi. Selesaikan pesanan di Kasir.</td></tr>'}</tbody></table></div>`},
+
+rekap(){const S=P.filter(p=>p.base+p.sold>0),sum=f=>S.reduce((a,p)=>a+f(p),0),om=sum(p=>(p.base+p.sold)*p.p),por=sum(p=>p.base+p.sold);
+ const tgl=st.per==='Harian'?'Penjualan pada '+new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):'Penjualan bulan '+new Date().toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+ const stat=(ic,l,v)=>`<div class="col"><div class="card rounded-9 h-100 stat-card"><div class="card-body flex-row gap-5"><i class="bi bi-${ic} fs-3xl"></i><div><small class="fg-secondary">${l}</small><div class="fs-3xl fw-bold lh-1">${v}</div><small>${tgl}</small></div></div></div></div>`;
+ return `<h1 class="fs-4xl fw-bold">Rekap Penjualan</h1>
+ <div class="border rounded-9 p-5 my-7"><div class="btn-group">${['Harian','Bulanan'].map(t=>`<button class="fw-bold px-7 ${t===st.per?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="st.per='${t}';render()">${t}</button>`).join('')}</div></div>
+ <div class="row row-cols-1 md:row-cols-3 g-7 mb-7">${stat('wallet2','Total omzet',rp(om))}${stat('file-text','Jumlah transaksi',st.hist.length+10)}${stat('bag','Porsi terjual',por+' porsi')}</div>
+ <div class="card rounded-9 p-7"><div class="d-flex flex-wrap justify-content-between align-items-center gap-5 mb-5"><h2 class="fw-bold fs-2xl mb-0">Rincian Produk Terjual</h2>
+  <div class="input-group" style="max-width:380px"><span class="input-group-text"><i class="bi bi-search"></i></span><input class="form-control" placeholder="Cari nama produk......" oninput="rRows(this.value)"></div></div>
+  <div class="table-responsive"><table class="table align-middle text-center mb-0"><thead><tr><th class="text-start">Nama Produk</th><th>Jumlah Terjual</th><th>Harga Satuan</th><th>Total Penjualan</th></tr></thead>
+  <tbody id="rrows">${rRowsHTML('')}</tbody><tfoot><tr class="fw-bold"><td class="text-start">Total Pembelian</td><td>${por} Porsi</td><td>${rp(sum(p=>p.p))}</td><td>${rp(om)}</td></tr></tfoot></table></div></div>`}
+};
+function rRowsHTML(q){return P.filter(p=>p.base+p.sold>0&&p.n.toLowerCase().includes(q.toLowerCase())).map(p=>`<tr><td class="text-start fw-bold">${p.n}<small class="d-block fw-normal fg-secondary">${p.c}</small></td><td>${p.base+p.sold} Porsi</td><td>${rp(p.p)}</td><td>${rp((p.base+p.sold)*p.p)}</td></tr>`).join('')}
+function rRows(q){$('#rrows').innerHTML=rRowsHTML(q)||'<tr><td colspan="4" class="fg-secondary py-7">Produk tidak ditemukan.</td></tr>'}
+
+/* ---------- Router ---------- */
+function render(){
+ let [page,arg]=(location.hash.slice(1)||'menu').split('/');
+ if(!V[page])page='menu';
+ if(st.admin&&!['kasir','rekap'].includes(page))page='kasir';
+ const nav=st.admin?[['kasir','Kasir'],['rekap','Rekap Penjualan']]:[['menu','Menu'],['kasir','Kasir'],['riwayat','Riwayat Transaksi']];
+ $('#nav').innerHTML=nav.map(([h,l])=>`<li class="nav-item"><a class="nav-link fw-bold ${h===page||(page==='detail'&&h==='menu')?'on':''}" role="button" onclick="go('${h}')">${l}</a></li>`).join('');
+ $('#login').textContent=st.admin?'Keluar':'Masuk';
+ $('#badge').textContent=count()||'';
+ document.body.classList.toggle('gray',['kasir','keranjang'].includes(page));
+ $('#view').innerHTML=V[page](arg);
+}
+let last='';
+addEventListener('hashchange',()=>{if(location.hash!==last){st.dq=1;st.dw=''}last=location.hash;scrollTo(0,0);render()});
+render();
+</script>
+</body>
+</html>

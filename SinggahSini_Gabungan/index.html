@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SinggahSini - Dashboard POS Kantin</title>
+  
+  <!-- Bootstrap CSS & Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS Eksternal -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">
+  <div class="brand-logo-img">
+    <img src="logo apk.jpeg" alt="Logo SinggahSini">
+  </div>
+  <div class="brand-text">
+    <div class="brand-name">SinggahSini</div>
+    <div class="brand-sub">Kantin & makanan rumahan</div>
+  </div>
+</div>
+
+      <div id="sidebar-section-title" class="sidebar-section-title">OPERASIONAL WARUNG</div>
+      <ul class="menu-list" id="sidebar-menu">
+        <!-- Default: Menu Admin -->
+        <li class="menu-item active" onclick="switchTab('dashboard')">
+          <i class="fa-solid fa-chart-pie"></i> <span>Ringkasan</span>
+        </li>
+        <li class="menu-item" onclick="switchTab('kasir')">
+          <i class="fa-solid fa-cash-register"></i> <span>Kasir</span>
+        </li>
+        <li class="menu-item" onclick="switchTab('produk')">
+          <i class="fa-solid fa-box"></i> <span>Produk</span>
+        </li>
+        <li class="menu-item" onclick="switchTab('kategori')">
+          <i class="fa-solid fa-tags"></i> <span>Kategori</span>
+        </li>
+        <li class="menu-item" onclick="switchTab('riwayat')">
+          <i class="fa-solid fa-receipt"></i> <span>Riwayat transaksi</span>
+        </li>
+        <li class="menu-item" onclick="switchTab('laporan')">
+          <i class="fa-solid fa-file-invoice-dollar"></i> <span>Laporan penjualan</span>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <!-- Tombol Saklar Role / Akses Pemilik -->
+      <div class="owner-profile-btn mb-2" id="account-toggle-btn" onclick="handleRoleToggle()" title="Klik untuk beralih akun">
+        <div class="user-avatar" id="account-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="user-info">
+          <h4 id="role-title">Akses Admin / Kasir</h4>
+          <p id="role-sub">Kelola penjualan, produk, kategori, dan laporan.</p>
+        </div>
+      </div>
+
+      <!-- Profil & Switch Akun Bawah -->
+      <div class="admin-footer-profile">
+        <div class="d-flex align-items-center gap-2">
+          <div class="user-avatar-sm" id="footer-avatar">AD</div>
+          <div>
+            <h6 class="mb-0" id="footer-username" style="font-size: 0.8rem; font-weight: 600;">Admin</h6>
+            <small class="text-muted" id="footer-userrole" style="font-size: 0.7rem;">Admin / Kasir</small>
+          </div>
+        </div>
+        <div class="mt-2 text-danger small" style="cursor: pointer;" onclick="handleRoleToggle()">
+          <i class="fa-solid fa-right-from-bracket me-1"></i> <span id="footer-action-text">Pindah ke Pemilik</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <div class="main-wrapper">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="page-breadcrumb">
+        <span id="breadcrumb-parent">Admin / Kasir</span> <i class="fa-solid fa-chevron-right mx-1" style="font-size: 10px;"></i> <span id="breadcrumb-child" class="fw-bold">Ringkasan</span>
+      </div>
+      <div class="header-right">
+        <div class="date-badge"><i class="fa-regular fa-calendar"></i> Sabtu, 24 Oktober 2026</div>
+        <div class="role-badge-top" id="top-role-badge">Admin / Kasir</div>
+      </div>
+    </header>
+
+    <div class="content-body">
+
+      <!-- 1. RINGKASAN ADMIN -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="page-heading-area">
+          <div>
+            <h2>Selamat siang, Admin 👋</h2>
+            <p>Yuk, lihat kabar SinggahSini hari ini.</p>
+          </div>
+          <button class="btn btn-custom-dark" onclick="switchTab('kasir')">
+            <i class="fa-solid fa-plus me-1"></i> Transaksi baru
+          </button>
+        </div>
+
+        <div class="card-grid">
+          <div class="stat-card highlight-dark">
+            <div class="stat-title">Penjualan hari ini <i class="fa-solid fa-calendar-day float-end"></i></div>
+            <div class="stat-value">Rp622.000</div>
+            <div class="stat-sub">24 Oktober 2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Transaksi hari ini <i class="fa-solid fa-receipt float-end"></i></div>
+            <div class="stat-value">24</div>
+            <div class="stat-sub">Semua transaksi tersimpan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Produk terjual <i class="fa-solid fa-box-open float-end"></i></div>
+            <div class="stat-value">78</div>
+            <div class="stat-sub">Dari 6 jenis produk</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Stok perlu perhatian <i class="fa-solid fa-triangle-exclamation float-end text-danger"></i></div>
+            <div class="stat-value text-danger">3 produk</div>
+            <div class="stat-sub">2 menipis • 1 habis</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <div class="content-card">
+            <h3>Penjualan hari ini</h3>
+            <p class="text-muted small">Warung ramai menjelang makan siang.</p>
+            <div class="d-flex justify-content-between align-items-center mt-2 mb-1">
+              <small class="text-muted">Penjualan per jam • ribu rupiah</small>
+              <span class="badge bg-light text-dark border">Hari ini</span>
+            </div>
+            <div class="chart-placeholder">
+              <div class="bar-col"><span>24</span><div class="bar" style="height: 25%;"></div><small>07:30</small></div>
+              <div class="bar-col"><span>52</span><div class="bar" style="height: 40%;"></div><small>08:00</small></div>
+              <div class="bar-col"><span>76</span><div class="bar" style="height: 55%;"></div><small>09:00</small></div>
+              <div class="bar-col"><span>104</span><div class="bar" style="height: 65%;"></div><small>10:00</small></div>
+              <div class="bar-col"><span>165</span><div class="bar" style="height: 80%;"></div><small>11:00</small></div>
+              <div class="bar-col"><span>200</span><div class="bar active-bar" style="height: 100%;"></div><small>12:00</small></div>
+            </div>
+          </div>
+
+          <div class="content-card">
+            <h3 class="text-danger">Periksa stok, yuk</h3>
+            <p class="text-muted small">Stok menipis jika tersisa ≤ 5.</p>
+            <div class="stock-alert-item"><span>Gorengan</span><strong>4 porsi</strong></div>
+            <div class="stock-alert-item"><span>Kopi hitam</span><strong>3 gelas</strong></div>
+            <div class="stock-alert-item"><span>Air mineral</span><strong class="text-danger">Habis</strong></div>
+            <button class="btn btn-outline-dark btn-sm w-100 mt-3" onclick="switchTab('produk')"><i class="fa-solid fa-box me-1"></i> Kelola stok produk</button>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="card-header-flex">
+            <div>
+              <h3>Transaksi terbaru</h3>
+              <p class="text-muted small mb-0">Penjualan yang berhasil disimpan hari ini.</p>
+            </div>
+            <span class="text-primary small fw-bold" style="cursor: pointer;" onclick="switchTab('riwayat')">Lihat semua →</span>
+          </div>
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr><th>No. transaksi</th><th>Waktu</th><th>Jumlah item</th><th>Total penjualan</th><th>Pembayaran</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>TRX-241026-024</td><td>12.40</td><td>4</td><td>Rp40.000</td><td>Tunai</td></tr>
+              <tr><td>TRX-241026-023</td><td>12.28</td><td>3</td><td>Rp27.000</td><td>Tunai</td></tr>
+              <tr><td>TRX-241026-022</td><td>12.15</td><td>2</td><td>Rp20.000</td><td>Tunai</td></tr>
+              <tr><td>TRX-241026-021</td><td>12.02</td><td>5</td><td>Rp34.000</td><td>Tunai</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 2. KASIR (LENGKAP DENGAN KARTU PRODUK & ATURAN JUMLAH) -->
+      <section id="view-kasir" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2>Kasir</h2>
+            <p>Pilih produk, periksa jumlah, lalu simpan penjualan.</p>
+          </div>
+          <span class="badge bg-light text-dark border p-2">Transaksi baru • 025</span>
+        </div>
+
+        <div class="pos-layout">
+          <div>
+            <div class="mb-3">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
+                <input type="text" id="kasirSearch" class="form-control" placeholder="Cari kode, nama, atau kategori produk..." oninput="renderKasirProducts()">
+              </div>
+            </div>
+            <div class="category-pills" id="kasirCategoryPills"></div>
+            <div class="product-grid" id="kasir-product-grid"></div>
+            
+            <div class="content-card mt-3 p-3">
+              <h5 class="fs-6 fw-bold mb-1">Aturan jumlah</h5>
+              <p class="text-muted small mb-2">Jumlah wajib lebih dari 0 dan tidak boleh melebihi stok tersedia.</p>
+              <div class="d-flex gap-2">
+                <span class="badge bg-light text-dark border">0 • Minimal 1</span>
+                <span class="badge bg-light text-dark border">5 gorengan • Maksimal 4</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keranjang Belanja -->
+          <div class="cart-box">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4 class="mb-0 fs-6 fw-bold">Keranjang penjualan</h4>
+                <i class="fa-solid fa-trash-can text-muted" style="cursor: pointer; font-size: 13px;" onclick="clearCart()"></i>
+              </div>
+              <small class="text-muted">TRX-241026-025 • Rina Ayu</small>
+              <hr class="my-2">
+              <div id="cart-items" style="max-height: 220px; overflow-y: auto;">
+                <p class="text-muted small text-center my-4">Belum ada item dipilih.</p>
+              </div>
+            </div>
+            <div class="cart-footer">
+              <div class="cart-total-row">
+                <span class="small" id="cart-item-count">Total : 0 item</span>
+                <strong class="fs-5" id="cart-total">Rp0</strong>
+              </div>
+              <div class="mb-2">
+                <label class="small text-muted mb-1">Uang diterima (Rp)</label>
+                <input type="number" id="cash-given" class="form-control form-control-sm" value="50000" oninput="calculateChange()">
+              </div>
+              <div class="d-flex justify-content-between bg-light p-2 rounded mb-3 small">
+                <span>Kembalian</span>
+                <strong id="change-amount">Rp0</strong>
+              </div>
+              <button class="btn btn-custom-dark btn-checkout w-100" onclick="checkout()">
+                <i class="fa-solid fa-check me-1"></i> Simpan penjualan
+              </button>
+              <small class="text-muted text-center d-block mt-2" style="font-size: 10px;">Setelah disimpan, stok otomatis berkurang.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PRODUK (ganti seluruh <section id="view-produk"> lama dengan ini) -->
+      <section id="view-produk" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2>Produk</h2>
+            <p>Atur menu, harga jual, dan stok warung dalam satu tempat.</p>
+          </div>
+          <button class="btn btn-custom-dark" onclick="newProduct()"><i class="fa-solid fa-plus me-1"></i> Tambah produk</button>
+        </div>
+
+        <div class="alert alert-warning py-2 small mb-3 d-none" id="productAlert"></div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <div class="content-card mb-0">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="mb-0 fs-6 fw-bold">Daftar produk</h3>
+                <small class="text-muted" id="productCount"></small>
+              </div>
+            </div>
+            <div class="row g-2 my-2">
+              <div class="col-8">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
+                  <input type="text" id="productAdminSearch" class="form-control" placeholder="Cari kode, nama, kategori..." oninput="renderProducts()" autocomplete="off">
+                </div>
+              </div>
+              <div class="col-4">
+                <select class="form-select form-select-sm" id="productFilterCategory" onchange="renderProducts()">
+                  <option value="">Semua kategori</option>
+                </select>
+              </div>
+            </div>
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr><th>Kode / Nama produk</th><th>Kategori</th><th>Harga jual</th><th>Stok</th><th>Aksi</th></tr>
+              </thead>
+              <tbody id="product-body"></tbody>
+            </table>
+            <div class="mt-3 text-muted small" id="productShowing"></div>
+          </div>
+
+          <!-- Form tambah / ubah produk -->
+          <div class="content-card mb-0">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="mb-0 fs-6 fw-bold" id="productFormTitle">Tambah produk</h3>
+              <span class="badge bg-light text-dark border" id="productFormBadge">Baru</span>
+            </div>
+            <p class="text-muted small" id="productFormSub">Isi data produk baru.</p>
+            <div class="mb-2">
+              <label class="form-label small fw-bold" for="productCode">Kode produk</label>
+              <input type="text" class="form-control form-control-sm" id="productCode" placeholder="mis. MKN-003" autocomplete="off">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-bold" for="productName">Nama produk</label>
+              <input type="text" class="form-control form-control-sm" id="productName" autocomplete="off">
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-bold" for="productCategorySelect">Kategori</label>
+              <select class="form-select form-select-sm" id="productCategorySelect"></select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small fw-bold" for="productPrice">Harga jual (Rp)</label>
+              <input type="number" min="0" class="form-control form-control-sm" id="productPrice">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold" for="productStock">Stok tersedia</label>
+              <input type="number" min="0" class="form-control form-control-sm" id="productStock">
+            </div>
+            <small class="text-muted d-block mb-3" style="font-size: 10px;">Kode produk harus unik. Harga dan stok tidak boleh negatif.</small>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm w-50" onclick="resetProductForm()">Batal</button>
+              <button class="btn btn-custom-dark btn-sm w-50" onclick="saveProduct()">Simpan</button>
+            </div>
+            <button class="btn btn-outline-danger btn-sm w-100 mt-2 d-none" id="productDeleteBtn" onclick="deleteProduct()"><i class="fa-solid fa-trash me-1"></i> Hapus produk</button>
+          </div>
+        </div>
+      </section>
+      
+
+      <!-- 4. KATEGORI (ganti seluruh <section id="view-kategori"> lama dengan ini) -->
+      <section id="view-kategori" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2>Kategori produk</h2>
+            <p>Kelompokkan menu agar lebih mudah ditemukan saat berjualan.</p>
+          </div>
+          <button class="btn btn-custom-dark" onclick="newCategory()"><i class="fa-solid fa-plus me-1"></i> Tambah kategori</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <div>
+            <div class="content-card mb-3">
+              <div class="card-header-flex">
+                <div>
+                  <h3 class="mb-0 fs-6 fw-bold">Daftar kategori</h3>
+                  <small class="text-muted" id="category-summary"></small>
+                </div>
+              </div>
+              <div class="my-2">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
+                  <input type="text" id="categorySearch" class="form-control" placeholder="Cari nama kategori..." oninput="renderCategories()">
+                </div>
+              </div>
+              <table class="table table-hover align-middle mt-2">
+                <thead>
+                  <tr><th>Nama kategori</th><th>Jumlah produk</th><th>Aksi</th></tr>
+                </thead>
+                <tbody id="category-body"></tbody>
+              </table>
+              <small class="text-muted" style="font-size: 11px;">Kategori yang masih memiliki produk tidak dapat dihapus.</small>
+            </div>
+
+            <!-- Konfirmasi hapus (muncul setelah klik "Hapus") -->
+            <div class="content-card border-danger bg-white d-none" id="category-delete-card">
+              <div class="d-flex align-items-center gap-2 mb-2 text-danger">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <h5 class="mb-0 fs-6 fw-bold" id="category-delete-title"></h5>
+              </div>
+              <p class="text-muted small mb-2">Kategori ini tidak memiliki produk.</p>
+              <p class="small mb-3">Kategori akan dihapus permanen. Data produk dan transaksi tidak berubah. Tindakan ini tidak dapat dibatalkan.</p>
+              <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-outline-secondary btn-sm" onclick="cancelDeleteCategory()">Batal</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDeleteCategory()"><i class="fa-solid fa-trash me-1"></i> Ya, hapus kategori</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form tambah / ubah kategori -->
+          <div class="content-card">
+            <h3 class="fs-6 fw-bold mb-1" id="category-form-title">Tambah kategori</h3>
+            <p class="text-muted small" id="category-form-sub">Buat kelompok produk baru.</p>
+            <div class="mb-3 mt-3">
+              <label class="form-label small fw-bold" for="inputCategoryName">Nama kategori</label>
+              <input type="text" class="form-control form-control-sm" id="inputCategoryName" autocomplete="off" onkeydown="if(event.key==='Enter')saveCategoryChanges()">
+            </div>
+            <small class="text-muted d-block mb-3" style="font-size: 11px;">Gunakan nama singkat dan unik, misalnya Makanan atau Minuman.</small>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-secondary btn-sm w-50" onclick="resetCategoryForm()">Batal</button>
+              <button class="btn btn-custom-dark btn-sm w-50" onclick="saveCategoryChanges()">Simpan</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. RIWAYAT TRANSAKSI (LENGKAP DENGAN PANEL DETAIL) -->
+      <section id="view-riwayat" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2>Riwayat transaksi</h2>
+            <p>Telusuri penjualan yang sudah tersimpan di warung.</p>
+          </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-md-5">
+            <label class="form-label small text-muted">Tanggal penjualan</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white"><i class="fa-regular fa-calendar"></i></span>
+              <input type="text" class="form-control" value="24 Oktober 2026">
+            </div>
+          </div>
+          <div class="col-md-5">
+            <label class="form-label small text-muted">Nomor transaksi</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white"><i class="fa-solid fa-search text-muted"></i></span>
+              <input type="text" class="form-control" placeholder="Cari nomor transaksi...">
+            </div>
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-custom-dark btn-sm w-100">Tampilkan</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
+          <div class="content-card mb-0">
+            <div class="mb-2">
+              <h3 class="mb-0 fs-6 fw-bold">24 transaksi ditemukan</h3>
+              <small class="text-muted">Total penjualan hari ini Rp622.000</small>
+            </div>
+            <table class="table table-hover align-middle mt-2" style="font-size: 11px;">
+              <thead>
+                <tr><th>Nomor transaksi</th><th>Waktu</th><th>Item</th><th>Total</th></tr>
+              </thead>
+              <tbody>
+                <tr class="table-active">
+                  <td><strong>TRX-241026-024</strong></td>
+                  <td>12.40</td>
+                  <td>4</td>
+                  <td>Rp40.000</td>
+                </tr>
+                <tr><td>TRX-241026-023</td><td>12.28</td><td>3</td><td>Rp27.000</td></tr>
+                <tr><td>TRX-241026-022</td><td>12.15</td><td>2</td><td>Rp20.000</td></tr>
+                <tr><td>TRX-241026-021</td><td>12.02</td><td>5</td><td>Rp34.000</td></tr>
+                <tr><td>TRX-241026-020</td><td>11.52</td><td>3</td><td>Rp29.000</td></tr>
+                <tr><td>TRX-241026-019</td><td>11.41</td><td>2</td><td>Rp17.000</td></tr>
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center mt-3 text-muted small">
+              <span>1-6 dari 24 transaksi</span>
+              <span>‹ 1 2 3 ›</span>
+            </div>
+          </div>
+
+          <!-- Detail Transaksi Panel Kanan -->
+          <div class="content-card mb-0 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h3 class="mb-0 fs-6 fw-bold">Detail transaksi</h3>
+              <span class="badge bg-light text-dark border">Tersimpan</span>
+            </div>
+            <div class="border-bottom pb-2 mb-2">
+              <strong class="text-dark" style="font-size: 0.9rem;">TRX-241026-024</strong><br>
+              <small class="text-muted" style="font-size: 11px;">24 Oktober 2026 • 12.40 WIB<br>Kasir: Rina Ayu • Tunai</small>
+            </div>
+
+            <table class="table table-sm align-middle mb-2" style="font-size: 11px;">
+              <thead>
+                <tr><th>Produk</th><th>Jumlah</th><th>Subtotal</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nasi goreng<br><small class="text-muted">Rp15.000</small></td>
+                  <td>2</td>
+                  <td>Rp30.000</td>
+                </tr>
+                <tr>
+                  <td>Es teh manis<br><small class="text-muted">Rp5.000</small></td>
+                  <td>2</td>
+                  <td>Rp10.000</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="bg-light p-2 rounded small">
+              <div class="d-flex justify-content-between mb-1"><span>Total penjualan</span><strong>Rp40.000</strong></div>
+              <div class="d-flex justify-content-between mb-1"><span>Uang diterima</span><strong>Rp50.000</strong></div>
+              <div class="d-flex justify-content-between"><span>Kembalian</span><strong>Rp10.000</strong></div>
+            </div>
+
+            <div class="alert alert-light border mt-3 p-2 small text-muted">
+              <i class="fa-solid fa-circle-check text-success me-1"></i> Stok telah dikurangi: nasi goreng 18 → 16 dan es teh manis 30 → 28.
+            </div>
+            <small class="text-muted d-block text-center mt-2" style="font-size: 10px;">Transaksi tersimpan menjadi bagian dari rekap penjualan harian dan bulanan.</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. LAPORAN PENJUALAN -->
+      <section id="view-laporan" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2>Laporan penjualan</h2>
+            <p>Rekap sederhana untuk mengetahui hasil usaha warung.</p>
+          </div>
+          <span class="badge bg-light text-dark border p-2">Tersedia untuk Admin & Pemilik</span>
+        </div>
+
+        <div class="content-card mb-3">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+              <label class="form-label small text-muted">Periode laporan</label>
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-sm btn-custom-dark">Harian</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Bulanan</button>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <label class="form-label small text-muted">Tanggal</label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white"><i class="fa-regular fa-calendar"></i></span>
+                <input type="text" class="form-control" value="24 Oktober 2026">
+              </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button class="btn btn-custom-dark btn-sm w-100 mt-4"><i class="fa-solid fa-chart-line me-1"></i> Tampilkan</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-grid mb-3">
+          <div class="stat-card highlight-dark">
+            <div class="stat-title">Total penjualan</div>
+            <div class="stat-value">Rp622.000</div>
+            <div class="stat-sub">Sabtu, 24 Oktober 2026</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Jumlah transaksi</div>
+            <div class="stat-value">24</div>
+            <div class="stat-sub">Transaksi tersimpan</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Produk terjual</div>
+            <div class="stat-value">78 item</div>
+            <div class="stat-sub">6 jenis produk</div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="card-header-flex">
+            <div>
+              <h3 class="mb-0 fs-6 fw-bold">Rincian produk terjual</h3>
+              <small class="text-muted">24 Oktober 2026 • Urutan berdasarkan jumlah terjual</small>
+            </div>
+            <span class="badge bg-light text-dark border">Rekap harian</span>
+          </div>
+          <table class="table table-hover align-middle mt-2">
+            <thead>
+              <tr><th>Nama produk</th><th>Kategori</th><th>Jumlah terjual</th><th>Total penjualan</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Es teh manis</td><td>Minuman</td><td>22</td><td>Rp110.000</td></tr>
+              <tr><td>Gorengan</td><td>Cemilan</td><td>18</td><td>Rp36.000</td></tr>
+              <tr><td>Nasi goreng</td><td>Makanan</td><td>12</td><td>Rp180.000</td></tr>
+              <tr><td>Kopi hitam</td><td>Minuman</td><td>10</td><td>Rp60.000</td></tr>
+              <tr><td>Mie goreng</td><td>Makanan</td><td>8</td><td>Rp96.000</td></tr>
+              <tr><td>Air mineral</td><td>Minuman</td><td>8</td><td>Rp40.000</td></tr>
+              <tr class="table-active fw-bold">
+                <td>Total</td>
+                <td>6 produk</td>
+                <td>78 item</td>
+                <td>Rp622.000</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="alert alert-light border mt-3 p-2 small text-muted">
+            <i class="fa-solid fa-circle-info me-1"></i> Admin dan Pemilik dapat melihat rekap harian/bulanan serta produk terjual. Pemilik memiliki akses lihat saja, tanpa mengubah data.
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. RINGKASAN PEMILIK (TIDAK ADA YANG HILANG) -->
+      <section id="view-analisis" class="view-section">
+        <div class="page-heading-area">
+          <div>
+            <h2 class="fs-5 fw-bold">Kabar SinggahSini hari ini, Pemilik</h2>
+            <p class="text-muted small">Pantau hasil penjualan, tanpa repot mengurus transaksi.</p>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="switchTab('laporan')"><i class="fa-solid fa-file-invoice-dollar me-1"></i> Lihat laporan</button>
+        </div>
+
+        <!-- 4 Kartu Atas Pemilik -->
+        <div class="card-grid">
+          <div class="stat-card highlight-dark">
+            <div class="stat-title d-flex justify-content-between align-items-center">
+              <span>Penjualan hari ini</span>
+              <i class="fa-regular fa-square"></i>
+            </div>
+            <div class="stat-value fs-4">Rp622.000</div>
+            <div class="stat-sub">24 Oktober • 24 transaksi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title d-flex justify-content-between align-items-center">
+              <span>Penjualan bulan ini</span>
+              <i class="fa-regular fa-square"></i>
+            </div>
+            <div class="stat-value fs-4">Rp12.480.000</div>
+            <div class="stat-sub">1-24 Oktober • 492 transaksi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title d-flex justify-content-between align-items-center">
+              <span>Terjual hari ini</span>
+              <i class="fa-regular fa-square"></i>
+            </div>
+            <div class="stat-value fs-4">78 item</div>
+            <div class="stat-sub">6 jenis produk</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title d-flex justify-content-between align-items-center">
+              <span>Terjual bulan ini</span>
+              <i class="fa-regular fa-square"></i>
+            </div>
+            <div class="stat-value fs-4">1.560 item</div>
+            <div class="stat-sub">1-24 Oktober 2026</div>
+          </div>
+        </div>
+
+        <!-- Grafik & Rekap Oktober -->
+        <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div class="content-card mb-0">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <h3 class="fs-6 fw-bold mb-0">Penjualan minggu ini</h3>
+              <span class="badge bg-light text-dark border fw-normal" style="font-size: 10px;">7 hari terakhir</span>
+            </div>
+            <p class="text-muted small mb-3" style="font-size: 11px;">18-24 Oktober 2026<br><span class="text-muted">Penjualan harian • ribu rupiah</span></p>
+
+            <div class="owner-chart-container">
+              <div class="chart-bar-item"><span>420</span><div class="owner-bar" style="height: 45%;"></div><small>18 Ok</small></div>
+              <div class="chart-bar-item"><span>540</span><div class="owner-bar" style="height: 60%;"></div><small>19 Ok</small></div>
+              <div class="chart-bar-item"><span>510</span><div class="owner-bar" style="height: 55%;"></div><small>20 Ok</small></div>
+              <div class="chart-bar-item"><span>560</span><div class="owner-bar" style="height: 65%;"></div><small>21 Ok</small></div>
+              <div class="chart-bar-item"><span>510</span><div class="owner-bar" style="height: 55%;"></div><small>22 Ok</small></div>
+              <div class="chart-bar-item"><span>600</span><div class="owner-bar" style="height: 75%;"></div><small>23 Ok</small></div>
+              <div class="chart-bar-item"><span>622</span><div class="owner-bar highlight-owner-bar" style="height: 85%;"></div><small>24 Ok</small></div>
+            </div>
+          </div>
+
+          <div class="content-card mb-0 bg-white">
+            <h3 class="fs-6 fw-bold mb-1">Rekap Oktober</h3>
+            <p class="text-muted small mb-3" style="font-size: 11px;">1-24 Oktober 2026</p>
+            <div class="d-flex justify-content-between mb-2 small"><span class="text-muted">Penjualan</span><strong class="fw-bold">Rp12.480.000</strong></div>
+            <div class="d-flex justify-content-between mb-2 small"><span class="text-muted">Transaksi</span><strong class="fw-bold">492</strong></div>
+            <div class="d-flex justify-content-between mb-2 small"><span class="text-muted">Produk terjual</span><strong class="fw-bold">1.560 item</strong></div>
+            <div class="d-flex justify-content-between mb-3 small"><span class="text-muted">Rata-rata per hari</span><strong class="fw-bold">Rp520.000</strong></div>
+            <small class="text-muted d-block" style="font-size: 10px;">Rekap diperbarui dari penjualan yang telah disimpan kasir.</small>
+          </div>
+        </div>
+
+        <!-- Produk Paling Laris Hari Ini -->
+        <div class="content-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h3 class="fs-6 fw-bold mb-0">Produk paling laris hari ini</h3>
+              <p class="text-muted small mb-0" style="font-size: 11px;">Peringkat berdasarkan jumlah terjual • 24 Oktober 2026</p>
+            </div>
+            <span class="badge bg-light text-dark border fw-normal" style="font-size: 10px;">Terlaris harian</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px;">
+            <div>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between small fw-bold mb-1"><span>Es teh manis</span><span>22 item</span></div>
+                <div class="progress" style="height: 6px;"><div class="progress-bar bg-dark" style="width: 100%;"></div></div>
+              </div>
+              <div class="mb-3">
+                <div class="d-flex justify-content-between small fw-bold mb-1"><span>Gorengan</span><span>18 item</span></div>
+                <div class="progress" style="height: 6px;"><div class="progress-bar bg-dark" style="width: 80%;"></div></div>
+              </div>
+              <div>
+                <div class="d-flex justify-content-between small fw-bold mb-1"><span>Nasi goreng</span><span>12 item</span></div>
+                <div class="progress" style="height: 6px;"><div class="progress-bar bg-dark" style="width: 55%;"></div></div>
+              </div>
+            </div>
+
+            <div>
+              <table class="table table-sm align-middle mb-0" style="font-size: 11px;">
+                <thead>
+                  <tr class="table-light"><th>Produk</th><th>Terjual</th><th>Penjualan</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Es teh manis</strong></td><td>22 item</td><td>Rp110.000</td></tr>
+                  <tr><td><strong>Gorengan</strong></td><td>18 item</td><td>Rp36.000</td></tr>
+                  <tr><td><strong>Nasi goreng</strong></td><td>12 item</td><td>Rp180.000</td></tr>
+                  <tr><td><strong>Kopi hitam</strong></td><td>10 item</td><td>Rp60.000</td></tr>
+                  <tr><td><strong>Mie goreng</strong></td><td>8 item</td><td>Rp96.000</td></tr>
+                  <tr><td><strong>Air mineral</strong></td><td>8 item</td><td>Rp40.000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- MODAL PASSWORD PEMILIK -->
+  <div id="customPassModal" class="custom-modal-overlay">
+    <div class="custom-modal-box">
+      <h5 class="fw-bold mb-2"><i class="fa-solid fa-lock text-success me-2"></i> Akses Pemilik Warung</h5>
+      <p class="text-muted small">Masukkan sandi untuk beralih ke akun Pemilik:</p>
+      <input type="password" id="customInputPassword" class="form-control mb-2" placeholder="Sandi (default: 1234)">
+      <div id="customPasswordError" class="text-danger small mb-3 d-none">Sandi salah! Silakan coba lagi.</div>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closePasswordModal()">Batal</button>
+        <button type="button" class="btn btn-custom-dark btn-sm" onclick="verifyOwnerPassword()">Masuk</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS Eksternal -->
+  <script src="./script.js"></script>
+</body>
+</html>

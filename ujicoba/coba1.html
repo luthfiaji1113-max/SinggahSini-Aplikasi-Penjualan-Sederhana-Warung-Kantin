@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SinggahSini</title>
+<!-- Bootstrap 6.0.0-alpha.1 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<!-- ===================== CSS ===================== -->
+<style>
+ body{min-height:100vh}
+ body.gray{background:#d9d9d9}
+ .logo{width:48px;height:48px;border-radius:10px;object-fit:cover;cursor:pointer}
+ .brand,.card-menu,[role=button]{cursor:pointer}
+ #nav .nav-link{color:#fff}
+ #nav .nav-link.on{text-decoration:underline;text-underline-offset:8px}
+ .ph{height:174px}
+ .pic{aspect-ratio:1/.88}
+ .badge-cart{background:#fff;color:#000}
+ .app-header{color:#fff}
+ .app-header .brand,.app-header .btn-text,.app-header #login{color:#fff!important}
+ .app-header .badge-cart{color:#000!important;font-size:.75rem;line-height:1.25rem;min-width:1.25rem;height:1.25rem;padding:0 .35rem}
+ .toast-container{position:fixed;left:50%;bottom:0;transform:translateX(-50%);padding:1rem;z-index:1090}
+
+ /* Foto menu */
+ .ph-img{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+ .ph-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+ .ph-img .emo{font-size:5.5rem;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.2))}
+ .ph-img .emo.big{font-size:13rem}
+
+ /* Modul admin: modal & kontrol filter */
+ .ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1080;padding:1rem}
+ .mbox{width:min(680px,100%);max-height:90vh;overflow:auto}
+ .sel{padding:.45rem .7rem;border:1px solid #9a9a9a;border-radius:.4rem;background:#fff;color:#000;font:inherit}
+ .text-nowrap{white-space:nowrap}
+ .stok-scroll thead th{position:sticky;top:0;background:#e0e0e0;z-index:1}
+
+ /* Hero Banner Section dengan Gambar Latar Belakang */
+ .hero-banner {
+   position: relative;
+   border-radius: 20px;
+   overflow: hidden;
+   margin-bottom: 2.5rem;
+   background: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5') center/cover no-repeat #5d3319;
+   min-height: 380px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   text-align: center;
+   color: #fff;
+ }
+ .hero-overlay {
+   position: absolute;
+   inset: 0;
+   background: rgba(0, 0, 0, 0.45);
+   z-index: 1;
+ }
+ .hero-content {
+   position: relative;
+   z-index: 2;
+   padding: 2rem;
+   max-width: 650px;
+ }
+ .hero-badge {
+   background: #a64b2a;
+   color: #ffffff;
+   font-size: 0.85rem;
+   font-weight: 700;
+   letter-spacing: 1px;
+   padding: 6px 20px;
+   border-radius: 50px;
+   display: inline-block;
+   margin-bottom: 1.25rem;
+   text-transform: uppercase;
+ }
+ .hero-title {
+   font-size: 2.5rem;
+   font-weight: 800;
+   margin-bottom: 0.75rem;
+   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+ }
+ .hero-subtitle {
+   font-size: 1.1rem;
+   opacity: 0.95;
+   margin-bottom: 1.75rem;
+   line-height: 1.5;
+ }
+ .btn-hero {
+   background-color: #a64b2a;
+   color: #fff !important;
+   border: none;
+   font-weight: 600;
+   padding: 10px 28px;
+   border-radius: 50px;
+   transition: all 0.2s ease;
+ }
+ .btn-hero:hover {
+   background-color: #8c3d20;
+   transform: translateY(-2px);
+ }
+</style>
+</head>
+<body>
+<!-- ===================== HTML ===================== -->
+
+<!-- Header -->
+<header class="app-header d-flex flex-wrap align-items-center gap-5 px-5 py-3 bg-black" data-bs-theme="dark">
+ <div class="d-flex align-items-center gap-3">
+  <!-- Logo SinggahSini -->
+  <img src="logo.jpg" alt="Logo SinggahSini" class="logo" onclick="go('menu')" onerror="this.src='https://placehold.co/100x100/8c4b27/ffffff?text=SS'">
+  <span class="brand fs-2xl fw-bold" onclick="go('menu')">SinggahSini</span>
+ </div>
+ <form class="flex-grow-1 mx-5" style="max-width:740px" onsubmit="return false">
+  <div class="input-group">
+   <input id="q" class="form-control" placeholder="Cari menu, misal:" oninput="cari(this.value)">
+   <button class="btn-solid theme-secondary" type="button" aria-label="Cari"><i class="bi bi-search"></i></button>
+  </div>
+ </form>
+ <div class="d-flex align-items-center gap-7 ms-auto">
+  <button class="btn-text position-relative fs-3xl p-0" aria-label="Keranjang" onclick="go('keranjang')">
+   <i class="bi bi-cart"></i><span id="badge" class="badge badge-cart rounded-pill position-absolute top-0 start-100 translate-middle"></span>
+  </button>
+  <button id="login" class="btn-text fw-bold" onclick="masuk()">Masuk</button>
+ </div>
+</header>
+
+<!-- Navigasi -->
+<nav class="bg-2" style="background:#757575!important" data-bs-theme="dark"><ul id="nav" class="nav flex-wrap justify-content-center gap-7 py-1"></ul></nav>
+
+<div id="modal"></div>
+<main id="view" class="container py-7"></main>
+
+<div class="toast-container"><div id="toast" class="toast theme-inverse" role="status"><div class="toast-body"></div></div></div>
+
+<!-- Bootstrap 6 -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+const EMO={'MKN-01':'🍛','MKN-02':'🍝','MKN-03':'🍗','MKN-04':'🍖','MKN-06':'🍜','MKN-07':'🍜','MKN-08':'🍚','MKN-09':'🍚','MKN-10':'🥗','MKN-11':'🥘','MKN-12':'🍢','MKN-13':'🥡','MKN-14':'🍝','MKN-15':'🐟','MKN-16':'🥣','MNM-01':'🧋','MNM-02':'🍊','MNM-03':'☕','CML-01':'🥟','CML-02':'🍪','CML-04':'🍌','CML-05':'🍟'};
+const BG={Makanan:'linear-gradient(135deg,#ececec,#bdbdbd)',Minuman:'linear-gradient(135deg,#e2e2e2,#a8a8a8)',Camilan:'linear-gradient(135deg,#f1f1f1,#c9c9c9)'};
+const bgc=p=>BG[p.c]||BG.Makanan;
+const WIKI={"MKN-01": "en/Nasi_goreng", "MKN-02": "en/Mie_goreng", "MKN-03": "en/Ayam_geprek", "MKN-04": "en/Ayam_bakar", "MKN-06": "en/Bakso", "MKN-07": "en/Mie_ayam", "MKN-08": "en/Nasi_uduk", "MKN-09": "en/Nasi_kuning", "MKN-10": "en/Gado-gado", "MKN-11": "en/Rendang", "MKN-12": "en/Satay", "MKN-13": "en/Cap_cai", "MKN-14": "en/Char_kway_teow", "MKN-15": "en/Pecel_lele", "MKN-16": "en/Bubur_ayam", "MNM-01": "en/Iced_tea", "MNM-02": "en/Orange_juice", "MNM-03": "en/Iced_coffee", "CML-01": "en/Dim_sum", "CML-02": "en/Cookie", "CML-04": "en/Pisang_goreng", "CML-05": "en/French_fries"};
+let FC={};try{FC=JSON.parse(localStorage.getItem('fotoCache')||'{}')}catch(e){}
+const foto=(p,big)=>{const w=FC[p.id];return `<div class="ph-img"><span class="emo ${big?'big':''}">${EMO[p.id]||'🍽️'}</span><img data-id="${p.id}" ${w?'data-t="w"':''} src="${w||'img/'+p.id+'.jpg'}" alt="${p.n}" referrerpolicy="no-referrer" onerror="fotoErr(this)"></div>`};
+async function getWiki(id){
+ if(id in FC)return FC[id];const w=WIKI[id];if(!w)return null;
+ try{const [l,t]=w.split('/'),r=await fetch(`https://${l}.wikipedia.org/api/rest_v1/page/summary/${t}`),j=await r.json();
+  const u=j.thumbnail&&j.thumbnail.source;FC[id]=u?u.replace(/\/\d+px-/,'/500px-'):null}catch(e){return null}
+ try{localStorage.setItem('fotoCache',JSON.stringify(FC))}catch(e){}return FC[id]}
+function fotoErr(img){
+ if(img.dataset.t==='w'){img.remove();return}
+ img.dataset.t='w';getWiki(img.dataset.id).then(u=>u?img.src=u:img.remove())}
+
+const P=[
+ {id:'MKN-01',n:'Nasi Goreng',c:'Makanan',p:15000,s:18,s0:28,sold:0,d:'Nasi goreng dengan telur, ayam suwir, dan kerupuk.'},
+ {id:'MKN-02',n:'Mie Goreng',c:'Makanan',p:14000,s:15,s0:17,sold:0,d:'Mie goreng bumbu kecap dengan sayur dan telur.'},
+ {id:'MKN-03',n:'Ayam Geprek',c:'Makanan',p:18000,s:14,s0:14,sold:0,d:'Ayam crispy digeprek sambal bawang pedas, disajikan dengan nasi.'},
+ {id:'MKN-04',n:'Nasi Ayam Bakar',c:'Makanan',p:20000,s:12,s0:12,sold:0,d:'Ayam bakar bumbu kecap, nasi hangat, lalapan, dan sambal.'},
+ {id:'MKN-06',n:'Bakso Urat',c:'Makanan',p:15000,s:20,s0:20,sold:0,d:'Bakso urat sapi dengan mie, sawi, dan kuah kaldu gurih.'},
+ {id:'MKN-07',n:'Mie Ayam',c:'Makanan',p:13000,s:18,s0:18,sold:0,d:'Mie ayam topping ayam cincang dan pangsit goreng.'},
+ {id:'MKN-08',n:'Nasi Uduk',c:'Makanan',p:14000,s:10,s0:10,sold:0,d:'Nasi gurih santan dengan telur dadar, bihun, dan bawang goreng.'},
+ {id:'MKN-09',n:'Nasi Kuning',c:'Makanan',p:14000,s:10,s0:10,sold:0,d:'Nasi kuning dengan abon, telur, dan sambal kacang.'},
+ {id:'MKN-10',n:'Gado-gado',c:'Makanan',p:13000,s:12,s0:12,sold:0,d:'Sayuran rebus, tahu, tempe, dan lontong dengan saus kacang.'},
+ {id:'MKN-11',n:'Nasi Rendang',c:'Makanan',p:22000,s:9,s0:9,sold:0,d:'Rendang sapi empuk dengan nasi, daun singkong, dan sambal hijau.'},
+ {id:'MKN-12',n:'Sate Ayam',c:'Makanan',p:17000,s:15,s0:15,sold:0,d:'Sepuluh tusuk sate ayam bumbu kacang dengan lontong.'},
+ {id:'MKN-13',n:'Nasi Capcay',c:'Makanan',p:16000,s:11,s0:11,sold:0,d:'Nasi dengan capcay sayur kuah kental dan telur ceplok.'},
+ {id:'MKN-14',n:'Kwetiau Goreng',c:'Makanan',p:17000,s:13,s0:13,sold:0,d:'Kwetiau goreng seafood dengan telur dan sawi.'},
+ {id:'MKN-15',n:'Nasi Pecel Lele',c:'Makanan',p:16000,s:12,s0:12,sold:0,d:'Lele goreng garing, nasi, lalapan, dan sambal terasi.'},
+ {id:'MKN-16',n:'Bubur Ayam',c:'Makanan',p:12000,s:14,s0:14,sold:0,d:'Bubur ayam dengan cakwe, kerupuk, dan kuah kuning.'},
+ {id:'MNM-01',n:'Teh Obeng',c:'Minuman',p:7000,s:10,s0:20,sold:0,d:'Teh manis dingin segar.'},
+ {id:'MNM-02',n:'Es Jeruk',c:'Minuman',p:8000,s:20,s0:20,sold:0,d:'Jeruk peras segar dengan es batu.'},
+ {id:'MNM-03',n:'Kopi Susu',c:'Minuman',p:12000,s:18,s0:18,sold:0,d:'Kopi susu gula aren, dingin atau panas.'},
+ {id:'CML-01',n:'Dimsum',c:'Camilan',p:5000,s:16,s0:16,sold:0,d:'Dimsum ayam kukus, isi tiga.'},
+ {id:'CML-02',n:'Cookies',c:'Camilan',p:3000,s:12,s0:12,sold:0,d:'Kue kering cokelat renyah.'},
+ {id:'CML-04',n:'Pisang Goreng',c:'Camilan',p:6000,s:15,s0:15,sold:0,d:'Pisang goreng tepung krispi, taburan keju atau cokelat.'},
+ {id:'CML-05',n:'Kentang Goreng',c:'Camilan',p:10000,s:14,s0:14,sold:0,d:'Kentang goreng renyah dengan saus sambal dan mayones.'}
+];
+const st={cart:[],mode:'Makan di tempat',pay:'Tunai',note:'',cat:'Semua',q:'',admin:false,dq:1,dw:'',seq:2,
+ cats:[{n:'Makanan',d:'Hidangan utama'},{n:'Minuman',d:'Minuman dingin dan panas'},{n:'Camilan',d:'Makanan ringan'}],
+ hist:[{no:'TRX-001',ts:Date.now()-18e5,items:[{id:'MKN-01',n:'Nasi Goreng',q:6,h:15000},{id:'MNM-01',n:'Teh Obeng',q:6,h:7000}],mode:'Makan di tempat',pay:'Tunai',note:''},
+ {no:'TRX-002',ts:Date.now()-6e5,items:[{id:'MKN-01',n:'Nasi Goreng',q:4,h:15000},{id:'MNM-01',n:'Teh Obeng',q:4,h:7000},{id:'MKN-02',n:'Mie Goreng',q:2,h:14000}],mode:'Bungkus',pay:'Qris',note:'Pedas'}],
+ f:{produk:{q:'',c:'Semua'},kat:{q:''},trx:{q:'',pay:'Semua',mode:'Semua',d:''},stok:{q:'',c:'Semua'},rekap:{q:'',c:'Semua',per:'Harian'}},ed:null};
+const $=s=>document.querySelector(s), prod=id=>P.find(x=>x.id===id);
+const rp=n=>'Rp.'+n.toLocaleString('id-ID');
+const MAXD=p=>Math.min(5,p.s);
+const total=()=>st.cart.reduce((a,i)=>a+prod(i.id).p*i.q,0);
+const count=()=>st.cart.reduce((a,i)=>a+i.q,0);
+const msg=(q,p)=>q<1?'Jumlah harus lebih dari 0':q>p.s?'Maaf, stok hanya tersedia '+p.s:'';
+function toast(t){const e=$('#toast');e.querySelector('.toast-body').textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2000)}
+function go(h){location.hash=h}
+
+function cari(v){st.q=v;if(!location.hash.startsWith('#menu'))go('menu');else render()}
+function masuk(){st.admin=!st.admin;go(st.admin?'kasir':'menu');render()}
+function setCat(c){st.cat=c;render()}
+function tambah(id,e){e.stopPropagation();const p=prod(id),i=st.cart.find(x=>x.id===id);
+ if((i?i.q:0)+1>p.s)return toast('Maaf, stok hanya tersedia '+p.s);
+ i?i.q++:st.cart.push({id,q:1,w:''});toast(p.n+' ditambahkan ke pesanan');render()}
+function chg(id,d){const i=st.cart.find(x=>x.id===id),p=prod(id),nq=i.q+d;if(nq<0)return;i.w=msg(nq,p);i.q=Math.min(nq,p.s);render()}
+function del(id){st.cart=st.cart.filter(x=>x.id!==id);render()}
+function dchg(d,id){const p=prod(id),nq=st.dq+d;if(nq<0)return;
+ st.dw=nq<1?'Jumlah harus lebih dari 0':nq>p.s?'Maaf, stok hanya tersedia '+p.s:nq>5?'Maksimal pembelian 5 per pesanan':'';
+ st.dq=Math.min(nq,MAXD(p));render()}
+function dAdd(id,now){const p=prod(id);if(st.dq<1){st.dw='Jumlah harus lebih dari 0';return render()}
+ const i=st.cart.find(x=>x.id===id);
+ if((i?i.q:0)+st.dq>p.s){st.dw='Maaf, stok hanya tersedia '+p.s;return render()}
+ i?i.q+=st.dq:st.cart.push({id,q:st.dq,w:''});
+ if(now)go('kasir');else{toast('Ditambahkan ke keranjang');render()}}
+function simpan(){if(!st.cart.length)return toast('Keranjang masih kosong');toast('Pesanan disimpan');go('kasir')}
+
+/* Proses Bayar & QRIS Pop-up */
+function bayar(){
+ if(!st.cart.length)return toast('Belum ada pesanan');
+ if(st.cart.some(i=>i.q<1||i.q>prod(i.id).s))return toast('Periksa jumlah pesanan terlebih dahulu');
+ 
+ if(st.pay === 'Qris'){
+   const tot = total();
+   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=SINGGAHSINI-${tot}`;
+   openM(`
+     <div class="text-center p-3">
+       <h3 class="fw-bold mb-2"><i class="bi bi-qr-code me-2"></i>Pembayaran QRIS</h3>
+       <p class="fg-secondary small mb-3">Scan kode QR di bawah ini menggunakan e-Wallet / M-Banking Anda</p>
+       <div class="bg-white p-3 d-inline-block rounded-3 shadow-sm border mb-3">
+         <img src="${qrUrl}" alt="Kode QRIS SinggahSini" width="200" height="200" class="img-fluid">
+       </div>
+       <div class="fs-4xl fw-bold text-success mb-3">${rp(tot)}</div>
+       <div class="alert alert-light border text-start small mb-4">
+         <ol class="mb-0 ps-3">
+           <li>Buka aplikasi GoPay, OVO, Dana, ShopeePay, atau Bank Anda.</li>
+           <li>Pilih menu <b>Scan QRIS</b>.</li>
+           <li>Arahkan kamera ke kode QR di atas.</li>
+           <li>Periksa nominal lalu konfirmasi pembayaran.</li>
+         </ol>
+       </div>
+       <button class="btn-solid theme-inverse w-100 py-3 fw-bold" onclick="konfirmasiQris()">Konfirmasi Pembayaran Selesai</button>
+     </div>
+   `);
+   return;
+ }
+ 
+ selesaikanTransaksi();
+}
+
+function konfirmasiQris(){
+ closeM();
+ selesaikanTransaksi();
+}
+
+function selesaikanTransaksi(){
+ st.hist.unshift({no:'TRX-'+String(++st.seq).padStart(3,'0'),ts:Date.now(),items:st.cart.map(i=>{const p=prod(i.id);return {id:i.id,n:p.n,q:i.q,h:p.p}}),mode:st.mode,pay:st.pay,note:st.note});
+ st.cart=[];st.note='';toast('Pembayaran berhasil');go(st.admin?'transaksi':'riwayat');
+}
+
+const row=(i,trash)=>{const p=prod(i.id);return `<div class="mb-5">
+ <div class="d-flex justify-content-between fw-bold"><span>${p.n}</span><span>${rp(p.p*i.q)}${trash?` <i class="bi bi-trash ms-3" role="button" onclick="del('${i.id}')"></i>`:''}</span></div>
+ <div class="d-flex justify-content-between align-items-center"><span>${rp(p.p)}/porsi</span>
+  <div class="d-flex align-items-center gap-3"><button class="btn-outline theme-inverse btn-sm" onclick="chg('${i.id}',-1)">–</button><span>${i.q}</span><button class="btn-outline theme-inverse btn-sm" onclick="chg('${i.id}',1)">+</button></div></div>
+ ${i.w?`<div class="text-end small fw-bold fg-danger">${i.w}</div>`:''}</div>`};
+const noteBox=()=>`<div class="input-group my-5"><span class="input-group-text"><i class="bi bi-journal-text"></i></span>
+ <input class="form-control" placeholder="Tambah Catatan Pesanan" value="${st.note.replace(/"/g,'&quot;')}" oninput="st.note=this.value"></div>`;
+const subtotal=()=>`<div class="d-flex justify-content-between fw-bold fs-xl mt-7"><span>Subtotal</span><span>${rp(total())}</span></div>`;
+const emptyCart='<p class="text-center fg-secondary py-7">Belum ada pesanan. Pilih menu dulu, lalu tekan +.</p>';
+
+const V={
+menu(){
+ const q=st.q.toLowerCase(),L=P.filter(p=>(st.cat==='Semua'||p.c===st.cat)&&p.n.toLowerCase().includes(q));
+ return `
+ <section class="hero-banner">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+   <span class="hero-badge">Selamat Datang di SinggahSini</span>
+   <h1 class="hero-title">Lapar? Yuk, Singgah Sini!</h1>
+   <p class="hero-subtitle">Temukan makanan dan minuman favoritmu tanpa perlu bingung ke mana harus pergi.</p>
+   <button class="btn btn-hero shadow" onclick="document.getElementById('daftar-menu').scrollIntoView({behavior: 'smooth'})">
+    Lihat Daftar Menu <i class="bi bi-arrow-right ms-2"></i>
+   </button>
+  </div>
+ </section>
+
+ <div id="daftar-menu" class="pt-2">
+  <h1 class="fs-4xl fw-bold mb-4">Daftar Menu</h1>
+  <div class="d-flex flex-wrap gap-3 mb-5">${['Semua',...cats()].map(c=>`<button class="btn-sm rounded-pill px-4 py-2 ${c===st.cat?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="setCat('${c}')">${c}</button>`).join('')}</div>
+ </div>
+
+ <div class="row row-cols-1 md:row-cols-2 lg:row-cols-3 g-7">${L.map(p=>`<div class="col"><article class="card card-menu border-0 rounded-9 overflow-hidden h-100" onclick="go('detail/${p.id}')">
+  <div class="ph" style="background:${bgc(p)}">${foto(p)}</div>
+  <div class="card-body bg-subtle-secondary position-relative p-7"><small>${p.c}</small><h5 class="fw-bold mb-1">${p.n}</h5><span class="price-tag">${rp(p.p)}</span>
+   <button class="btn bg-white fs-xl fw-bold position-absolute bottom-0 end-0 m-5 px-5 py-1" aria-label="Tambah ${p.n}" onclick="tambah('${p.id}',event)">+</button></div></article></div>`).join('')||'<p class="fg-secondary">Menu tidak ditemukan. Coba kata kunci lain.</p>'}</div>
+ <p class="small fg-secondary mt-7">Klik tombol + untuk menambahkan menu ke pesanan.</p>`},
+
+detail(id){const p=prod(id);if(!p)return '<p>Menu tidak ditemukan.</p>';
+ return `<a class="small d-inline-block mb-3 text-decoration-none" role="button" onclick="go('menu')">← Menu / ${p.n}</a>
+ <div class="row g-7 lg:g-12"><div class="col lg:col-7"><span class="badge badge-subtle theme-secondary rounded-pill px-5 py-3 mb-5 cat-pill">${p.c}</span>
+  <div class="pic rounded-9 overflow-hidden" style="background:${bgc(p)}">${foto(p,1)}</div></div>
+ <div class="col lg:col-5"><div class="bg-2 rounded-9 p-7 lg:p-12">
+  <div class="fs-lg">Detail Produk</div><h2 class="fs-3xl fw-bold mb-0">${p.n}</h2><em class="d-block mb-5">${p.id}</em>
+  <div class="fs-4xl fw-bold mb-5 price-big">Rp. ${p.p.toLocaleString('id-ID')}</div>
+  <div class="fs-lg">Stok:</div><span class="badge badge-subtle theme-secondary rounded-pill px-5 py-3 fs-md stok-pill"><i class="bi bi-box-seam"></i> ${p.s} tersisa</span>
+  <h5 class="fw-bold fg-secondary mt-7">DESKRIPSI</h5><p class="small">${p.d}</p>
+  <div class="d-flex align-items-center gap-5 my-7"><span class="fw-bold fg-secondary">JUMLAH</span>
+   <div class="d-flex align-items-center justify-content-between bg-subtle-secondary rounded-pill px-5 py-1" style="width:125px"><button class="btn-text btn-sm p-0" onclick="dchg(-1,'${id}')">—</button><span>${st.dq}</span><button class="btn-text btn-sm p-0" onclick="dchg(1,'${id}')">+</button></div>
+   <small class="fg-secondary">maks. ${MAXD(p)}</small></div>
+  ${st.dw?`<div class="small fw-bold fg-danger mb-5">${st.dw}</div>`:''}
+  <div class="d-flex flex-wrap gap-5"><button class="btn-solid theme-inverse rounded-pill px-7 py-3" ${p.s<1?'disabled':''} onclick="dAdd('${id}')"><i class="bi bi-cart"></i> Tambah ke Keranjang</button>
+   <button class="btn-subtle theme-secondary rounded-pill px-7 py-3" ${p.s<1?'disabled':''} onclick="dAdd('${id}',1)">Pesan Sekarang</button></div>
+ </div></div></div>`},
+
+kasir(){return `<div class="row justify-content-center"><div class="col md:col-9 lg:col-6 xl:col-5"><div class="card border-0 rounded-9 p-7">
+ <h2 class="fw-bold fs-2xl mb-0">Pesanan Saat Ini</h2><div class="fs-lg mb-5">${count()} item</div>
+ <div class="btn-group w-100 mb-5">${['Makan di tempat','Bungkus'].map(m=>`<button class="fw-bold ${m===st.mode?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="st.mode='${m}';render()">${m}</button>`).join('')}</div>
+ ${st.cart.map(i=>row(i)).join('')||emptyCart}${subtotal()}${noteBox()}<hr>
+ <h6 class="fw-bold">Metode Pembayaran</h6>
+ <div class="row row-cols-3 g-3 mb-5">${[['Tunai','cash-coin'],['Qris','qr-code'],['Transfer','bank']].map(([m,ic])=>`<div class="col"><button class="w-100 d-flex flex-column align-items-center py-3 fw-bold ${m===st.pay?'btn-solid theme-inverse':'btn-outline theme-secondary'}" onclick="st.pay='${m}';render()"><i class="bi bi-${ic} fs-2xl"></i>${m}</button></div>`).join('')}</div>
+ <button class="btn-solid theme-inverse w-100 py-5 fs-xl fw-bold" onclick="bayar()">Bayar Sekarang</button></div></div></div>`},
+
+keranjang(){return `<div class="row justify-content-center"><div class="col md:col-9 lg:col-6 xl:col-5"><div class="card border-0 rounded-9 p-7" style="min-height:560px">
+ <h2 class="fs-2xl fw-bold"><i class="bi bi-cart"></i> Keranjang Saya</h2><div class="fs-lg border-bottom pb-3 mb-5">${count()} item</div>
+ ${st.cart.map(i=>row(i,1)).join('')||emptyCart}
+ <div class="mt-auto">${subtotal()}${noteBox()}<hr><button class="btn-solid theme-inverse w-100 py-5 fs-xl fw-bold" onclick="simpan()">Simpan Pesanan Saya</button></div></div></div></div>`},
+
+stok(){return pg('Ringkasan Stok',srch('stok','Cari produk...')+sel('stok','c',['Semua',...cats()]),'stok')},
+produk(){return pg('Kelola Produk',srch('produk','Cari kode / nama produk...')+sel('produk','c',['Semua',...cats()])+`<button class="btn-solid theme-inverse px-7 ms-auto" onclick="formProduk()">+ Tambah Produk</button>`,'produk')},
+kategori(){return pg('Kelola Kategori',srch('kat','Cari kategori...')+`<button class="btn-solid theme-inverse px-7 ms-auto" onclick="formKat()">+ Tambah Kategori</button>`,'kat')},
+transaksi(){return pg('Kelola Transaksi',trxBar()+`<button class="btn-solid theme-inverse px-7 ms-auto" onclick="go('kasir')">+ Transaksi Baru</button>`,'trx')},
+riwayat(){return pg('Riwayat Transaksi',trxBar(),'trx')+ringkasStok()},
+rekap(){return pg('Rekap Penjualan',srch('rekap','Cari nama produk...')+sel('rekap','c',['Semua',...cats()]),'rekap')}
+};
+
+const ADM=['kasir','produk','kategori','transaksi','stok','rekap'];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cats=()=>st.cats.map(c=>c.n);
+const sold=id=>st.hist.reduce((a,h)=>a+h.items.filter(i=>i.id===id).reduce((b,i)=>b+i.q,0),0);
+const sync=()=>P.forEach(p=>{p.sold=sold(p.id);p.s=p.s0-p.sold});
+const ttl=h=>h.items.reduce((a,i)=>a+i.q*i.h,0);
+const fdt=ts=>new Date(ts).toLocaleString('id-ID');
+const sumk=(L,k)=>L.reduce((a,x)=>a+x[k],0);
+const btn=(l,fn)=>`<button class="btn-outline theme-inverse btn-sm px-5" onclick="${fn}">${l}</button>`;
+const tbl=(h,rows,empty)=>`<div class="table-responsive"><table class="table table-striped align-middle"><thead class="bg-2"><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows||`<tr><td colspan="${h.length}" class="text-center fg-secondary py-7">${empty}</td></tr>`}</tbody></table></div>`;
+const pg=(t,tb,k)=>`<h1 class="fs-4xl fw-bold mb-7">${t}</h1><div class="d-flex flex-wrap gap-5 align-items-center mb-5">${tb}</div><div id="list">${LIST[k]()}</div>`;
+const srch=(k,ph)=>`<input class="form-control" style="max-width:300px" placeholder="${ph}" value="${esc(st.f[k].q)}" oninput="flt('${k}','q',this.value)">`;
+const sel=(k,f,o)=>`<select class="sel" onchange="flt('${k}','${f}',this.value)">${o.map(x=>`<option ${x===st.f[k][f]?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
+const trxBar=()=>srch('trx','Cari no / produk / catatan...')+sel('trx','pay',['Semua','Tunai','Qris','Transfer'])+sel('trx','mode',['Semua','Makan di tempat','Bungkus'])+`<input type="date" class="sel" value="${st.f.trx.d}" onchange="flt('trx','d',this.value)">`;
+const flt=(k,f,v)=>{st.f[k][f]=v;$('#list').innerHTML=LIST[k]()};
+const stat=(ic,l,v,t)=>`<div class="col"><div class="card rounded-9 h-100 stat-card"><div class="card-body flex-row gap-5"><i class="bi bi-${ic} fs-3xl"></i><div><small class="fg-secondary">${l}</small><div class="fs-3xl fw-bold lh-1">${v}</div><small>${t}</small></div></div></div></div>`;
+const status=p=>p.s<1?'Habis':p.s<=5?'Menipis':'Aman';
+
+function ringkasStok(){const last=st.hist.length?Math.max(...st.hist.map(h=>h.ts)):Date.now();
+ return `<div class="card border-0 rounded-9 p-7 mt-7"><div class="d-flex align-items-center gap-5 border-bottom pb-5 mb-5"><i class="bi bi-box-seam fs-4xl"></i><h2 class="fw-bold mb-0 flex-grow-1">Ringkasan Stok</h2><small class="fg-secondary text-end">Terakhir diupdate<br>${fdt(last)}</small></div>
+ <div class="table-responsive stok-scroll" style="max-height:420px;overflow:auto"><table class="table table-bordered align-middle text-center mb-0"><thead class="bg-2"><tr><th class="text-start">Produk</th><th>Stok Sebelum</th><th>Stok Terjual</th><th>Stok Setelah</th></tr></thead>
+ <tbody>${P.map(p=>`<tr><td class="text-start">${esc(p.n)}</td><td>${p.s0}</td><td>${p.sold}</td><td>${p.s}</td></tr>`).join('')}</tbody></table></div></div>`}
+
+const LIST={
+produk(){const f=st.f.produk,q=f.q.toLowerCase();
+ return tbl(['Kode','Produk','Kategori','Harga','Stok','Aksi'],P.filter(p=>(f.c==='Semua'||p.c===f.c)&&(p.id+p.n).toLowerCase().includes(q)).map(p=>`<tr><td>${p.id}</td><td class="fw-bold">${esc(p.n)}</td><td>${esc(p.c)}</td><td>${rp(p.p)}</td><td>${p.s}${p.s<=5?` <small class="fw-bold fg-danger">(${status(p)})</small>`:''}</td><td class="text-nowrap">${btn('Edit',`formProduk('${p.id}')`)} ${btn('Hapus',`delProduk('${p.id}')`)}</td></tr>`).join(''),'Produk tidak ditemukan.')},
+kat(){const q=st.f.kat.q.toLowerCase();
+ return tbl(['Kategori','Keterangan','Jumlah Produk','Total Stok','Aksi'],st.cats.map((c,i)=>({c,i})).filter(({c})=>(c.n+c.d).toLowerCase().includes(q)).map(({c,i})=>{const L=P.filter(p=>p.c===c.n);return `<tr><td class="fw-bold">${esc(c.n)}</td><td>${esc(c.d)}</td><td>${L.length}</td><td>${sumk(L,'s')}</td><td class="text-nowrap">${btn('Edit',`formKat(${i})`)} ${btn('Hapus',`delKat(${i})`)}</td></tr>`}).join(''),'Kategori tidak ditemukan.')},
+stok(){const f=st.f.stok,q=f.q.toLowerCase();
+ const kr=st.cats.map(c=>{const L=P.filter(p=>p.c===c.n);return `<tr><td class="fw-bold">${esc(c.n)}</td><td>${L.length}</td><td>${sumk(L,'s0')}</td><td>${sumk(L,'sold')}</td><td>${sumk(L,'s')}</td><td>${L.filter(p=>p.s<=5).length}</td></tr>`}).join('');
+ const pr=P.filter(p=>(f.c==='Semua'||p.c===f.c)&&p.n.toLowerCase().includes(q)).map(p=>`<tr><td class="fw-bold">${esc(p.n)}</td><td>${esc(p.c)}</td><td>${p.s0}</td><td>${p.sold}</td><td>${p.s}</td><td>${status(p)}</td></tr>`).join('');
+ return `<h2 class="fs-2xl fw-bold mb-3">Rekap per Kategori</h2>${tbl(['Kategori','Jumlah Produk','Stok Sebelum','Stok Terjual','Stok Setelah','Stok Menipis'],kr,'Belum ada kategori.')}
+ <h2 class="fs-2xl fw-bold mb-3 mt-7">Rekap per Produk</h2>${tbl(['Produk','Kategori','Stok Sebelum','Stok Terjual','Stok Setelah','Status'],pr,'Produk tidak ditemukan.')}
+ <small class="fg-secondary">Terakhir diupdate ${fdt(Date.now())}</small>`},
+trx(){const f=st.f.trx,q=f.q.toLowerCase();
+ const L=st.hist.filter(h=>(f.pay==='Semua'||h.pay===f.pay)&&(f.mode==='Semua'||h.mode===f.mode)&&(!f.d||new Date(h.ts).toLocaleDateString('sv-SE')===f.d)&&(h.no+h.note+h.items.map(i=>i.n).join(' ')).toLowerCase().includes(q));
+ return tbl(['No','Waktu','Pesanan','Jenis','Bayar','Total','Aksi'],L.map(h=>`<tr><td>${h.no}</td><td>${fdt(h.ts)}</td><td>${h.items.map(i=>esc(i.n)+' ×'+i.q).join(', ')}${h.note?`<small class="d-block fg-secondary">Catatan: ${esc(h.note)}</small>`:''}</td><td>${h.mode}</td><td>${h.pay}</td><td class="fw-bold">${rp(ttl(h))}</td><td class="text-nowrap">${btn('Detail',`openTrx('${h.no}')`)}${st.admin?` ${btn('Edit',`openTrx('${h.no}',1)`)} ${btn('Hapus',`delTrx('${h.no}')`)}`:''}</td></tr>`).join(''),'Belum ada transaksi yang sesuai.')},
+rekap(){const f=st.f.rekap,q=f.q.toLowerCase(),now=new Date(),M={};let nt=0;
+ st.hist.filter(h=>{const d=new Date(h.ts);return f.per==='Harian'?d.toDateString()===now.toDateString():d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()})
+ .forEach(h=>{let hit=0;h.items.forEach(i=>{const p=prod(i.id),c=p?p.c:'-';if((f.c!=='Semua'&&c!==f.c)||!i.n.toLowerCase().includes(q))return;hit=1;const m=M[i.id]||(M[i.id]={n:i.n,c,q:0,t:0});m.q+=i.q;m.t+=i.q*i.h});nt+=hit});
+ const R=Object.values(M),por=sumk(R,'q'),om=sumk(R,'t'),tgl=f.per==='Harian'?'Penjualan hari ini':'Penjualan bulan ini';
+ const K={};R.forEach(r=>{const k=K[r.c]||(K[r.c]={c:r.c,q:0,t:0});k.q+=r.q;k.t+=r.t});
+ return `<div class="border rounded-9 p-5 mb-7"><div class="btn-group">${['Harian','Bulanan'].map(t=>`<button class="fw-bold px-7 ${t===f.per?'btn-solid theme-inverse':'btn-subtle theme-secondary'}" onclick="flt('rekap','per','${t}')">${t}</button>`).join('')}</div></div>
+ <div class="row row-cols-1 md:row-cols-3 g-7 mb-7">${stat('wallet2','Total omzet',rp(om),tgl)}${stat('file-text','Jumlah transaksi',nt,tgl)}${stat('bag','Porsi terjual',por+' porsi',tgl)}</div>
+ <h2 class="fs-2xl fw-bold mb-3">Rincian Produk Terjual</h2>${tbl(['Nama Produk','Jumlah Terjual','Harga Satuan','Total Penjualan'],R.map(r=>`<tr><td class="fw-bold">${esc(r.n)}<small class="d-block fw-normal fg-secondary">${esc(r.c)}</small></td><td>${r.q} Porsi</td><td>${rp(Math.round(r.t/r.q))}</td><td>${rp(r.t)}</td></tr>`).join('')+(R.length?`<tr class="fw-bold"><td>Total Pembelian</td><td>${por} Porsi</td><td></td><td>${rp(om)}</td></tr>`:''),'Belum ada penjualan pada periode ini.')}
+ <h2 class="fs-2xl fw-bold mb-3 mt-7">Rekap per Kategori</h2>${tbl(['Kategori','Porsi Terjual','Total Penjualan'],Object.values(K).map(k=>`<tr><td class="fw-bold">${esc(k.c)}</td><td>${k.q} Porsi</td><td>${rp(k.t)}</td></tr>`).join(''),'Belum ada penjualan pada periode ini.')}`}
+};
+
+const openM=h=>$('#modal').innerHTML=h?`<div class="ov" onclick="if(event.target===this)closeM()"><div class="card rounded-9 p-7 mbox">${h}</div></div>`:'';
+const closeM=()=>openM('');
+const fld=(l,id,v,t='text',x='')=>`<label class="d-block mb-3"><span class="small fw-bold">${l}</span><input id="${id}" type="${t}" class="form-control" value="${esc(v)}" ${x}></label>`;
+const fsel=(l,id,o,v,on='')=>`<label class="d-block mb-3"><span class="small fw-bold d-block">${l}</span><select id="${id}" class="sel w-100" ${on}>${o.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`;
+const actions=s=>`<div id="ferr" class="small fw-bold fg-danger mb-3"></div><div class="d-flex gap-5 justify-content-end"><button class="btn-subtle theme-secondary px-7" onclick="closeM()">Batal</button><button class="btn-solid theme-inverse px-7" onclick="${s}">Simpan</button></div>`;
+const ferr=m=>{$('#ferr').textContent=m};
+
+function newId(){let n=P.length+1;while(prod('PRD-'+String(n).padStart(2,'0')))n++;return 'PRD-'+String(n).padStart(2,'0')}
+function formProduk(id){if(!cats().length)return toast('Tambah kategori terlebih dahulu');
+ const p=id?prod(id):{id:newId(),n:'',c:cats()[0],p:'',s:'',d:''};
+ openM(`<h2 class="fs-2xl fw-bold mb-5">${id?'Edit':'Tambah'} Produk</h2>${fld('Kode produk','f-id',p.id,'text',id?'readonly':'')}${fld('Nama produk','f-n',p.n)}${fsel('Kategori','f-c',cats(),p.c)}${fld('Harga (Rp)','f-p',p.p,'number','min="1"')}${fld('Stok tersedia','f-s',p.s,'number','min="0"')}<label class="d-block mb-3"><span class="small fw-bold">Deskripsi</span><textarea id="f-d" class="form-control" rows="2">${esc(p.d||'')}</textarea></label>${actions(`saveProduk('${id||''}')`)}`)}
+function saveProduk(old){const v=k=>$('#f-'+k).value.trim(),id=v('id'),n=v('n'),c=v('c'),h=+v('p'),s=+v('s'),d=v('d');
+ if(!id)return ferr('Kode wajib diisi');if(!old&&prod(id))return ferr('Kode sudah dipakai');
+ if(!n)return ferr('Nama wajib diisi');if(!(h>0))return ferr('Harga harus lebih dari 0');
+ if(v('s')===''||!Number.isInteger(s)||s<0)return ferr('Stok harus bilangan bulat 0 atau lebih');
+ if(old){const p=prod(old);Object.assign(p,{n,c,p:h,d,s0:s+p.sold})}else P.push({id,n,c,p:h,s,s0:s,sold:0,d});
+ closeM();toast('Produk disimpan');render()}
+function delProduk(id){const p=prod(id);
+ if(sold(id)>0)return toast('Produk sudah ada di transaksi, tidak bisa dihapus');
+ if(!confirm('Hapus produk "'+p.n+'"?'))return;
+ P.splice(P.indexOf(p),1);st.cart=st.cart.filter(i=>i.id!==id);toast('Produk dihapus');render()}
+
+function formKat(i=-1){const c=i>=0?st.cats[i]:{n:'',d:''};
+ openM(`<h2 class="fs-2xl fw-bold mb-5">${i>=0?'Edit':'Tambah'} Kategori</h2>${fld('Nama kategori','k-n',c.n)}${fld('Keterangan','k-d',c.d)}${actions(`saveKat(${i})`)}`)}
+function saveKat(i){const n=$('#k-n').value.trim(),d=$('#k-d').value.trim();
+ if(!n)return ferr('Nama kategori wajib diisi');
+ if(st.cats.some((c,j)=>j!==i&&c.n.toLowerCase()===n.toLowerCase()))return ferr('Nama kategori sudah ada');
+ if(i>=0){const old=st.cats[i].n;st.cats[i]={n,d};P.forEach(p=>{if(p.c===old)p.c=n});if(st.cat===old)st.cat=n}else st.cats.push({n,d});
+ closeM();toast('Kategori disimpan');render()}
+function delKat(i){const c=st.cats[i],k=P.filter(p=>p.c===c.n).length;
+ if(k)return toast('Kategori masih dipakai '+k+' produk');
+ if(!confirm('Hapus kategori "'+c.n+'"?'))return;
+ st.cats.splice(i,1);if(st.cat===c.n)st.cat='Semua';toast('Kategori dihapus');render()}
+
+function openTrx(no,edit){const h=st.hist.find(x=>x.no===no);if(!h)return;
+ if(edit){st.ed=JSON.parse(JSON.stringify(h));return renderEd()}
+ openM(`<h2 class="fs-2xl fw-bold mb-1">Detail ${h.no}</h2><div class="small fg-secondary mb-5">${fdt(h.ts)} · ${h.mode} · ${h.pay}</div>${tbl(['Produk','Harga','Jumlah','Subtotal'],h.items.map(i=>`<tr><td>${esc(i.n)}</td><td>${rp(i.h)}</td><td>${i.q}</td><td>${rp(i.q*i.h)}</td></tr>`).join(''),'')}<div class="d-flex justify-content-between fw-bold fs-xl my-5"><span>Total</span><span>${rp(ttl(h))}</span></div>${h.note?`<p class="small">Catatan: ${esc(h.note)}</p>`:''}<div class="text-end"><button class="btn-subtle theme-secondary px-7" onclick="closeM()">Tutup</button></div>`)}
+
+sync();
+function render(){
+ const h=location.hash.slice(1)||'menu', [k]=h.split('/');
+ const ok=st.admin?ADM.includes(k):['menu','detail','kasir','keranjang','riwayat'].includes(k);
+ if(!ok)return go(st.admin?'kasir':'menu');
+ $('#view').innerHTML=V[k]?V[k](h.split('/')[1]):'<p>Halaman tidak ditemukan.</p>';
+ document.querySelectorAll('#nav .nav-link').forEach(l=>l.classList.toggle('on',l.getAttribute('href')==='#'+k));
+ document.querySelectorAll('header .brand').forEach(b=>b.classList.toggle('on',k==='menu'));
+ $('#badge').textContent=count()||'';
+}
+window.addEventListener('hashchange',render);
+if(!location.hash)go('menu');else render();
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+/* Palet Warna SinggahSini Kedai & Kantin Indonesia */
+:root {
+  --dark-brown: #493329; /* Header & Elemen Utama */
+  --terracotta: #A94F32; /* Tombol Utama & Badge Accent */
+  --caramel: #D98555;    /* Hover & Accent Tambahan */
+  --bg-cream: #FFF4E5;   /* Background Utama Seluruh Web */
+  --card-cream: #f6e8d5; /* Background Kartu & Container */
+  --nav-gray: #5c473c;   /* Navigasi Cokelat Kayu Sedang */
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg-cream) !important;
+  color: #3e2a20;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Header Cokelat Gelap khas Kedai */
+.app-header {
+  background-color: var(--dark-brown) !important;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Search Bar di Tengah Header */
+.search-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 2rem;
+}
+.search-wrapper {
+  width: 100%;
+  max-width: 600px;
+}
+
+.app-header .brand, 
+.app-header .btn-text {
+  color: #fff !important;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: transparent;
+}
+.brand, .card-menu, [role=button] {
+  cursor: pointer;
+}
+
+.app-header .form-control {
+  background-color: #FFF4E5;
+  border: none;
+  border-radius: 50px 0 0 50px;
+  padding-left: 20px;
+  color: #493329;
+}
+.app-header .form-control::placeholder {
+  color: #8c7365;
+}
+
+.app-header .input-group button {
+  border-radius: 0 50px 50px 0;
+  background-color: #FFF4E5;
+  border: none;
+  color: var(--dark-brown);
+}
+
+/* Navigasi Bawah Header */
+nav.bg-2 {
+  background: var(--nav-gray) !important;
+}
+#nav .nav-link {
+  color: #FFF4E5;
+  font-weight: 500;
+}
+#nav .nav-link.on {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 8px;
+  font-weight: 700;
+}
+
+/* Badge Keranjang */
+.badge-cart {
+  background: var(--terracotta) !important;
+  color: #fff !important;
+}
+
+/* Hero Banner */
+.hero-banner {
+  position: relative;
+  border-radius: 0 0 30px 30px;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  background: url('WhatsApp\ Image\ 2026-10-23\ at\ 13.13.37.jpeg') center/cover no-repeat var(--dark-brown);
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(73, 51, 41, 0.15);
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(73, 51, 41, 0.65);
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  max-width: 700px;
+}
+.hero-badge {
+  background: var(--terracotta);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 8px 22px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-size: 2.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+.hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin-bottom: 1.75rem;
+}
+.btn-hero {
+  background-color: var(--terracotta);
+  color: #fff !important;
+  border: none;
+  font-weight: 600;
+  padding: 10px 28px;
+  border-radius: 50px;
+  transition: all 0.2s ease;
+}
+.btn-hero:hover {
+  background-color: var(--caramel);
+  transform: translateY(-2px);
+}
+
+/* Kartu Menu & Container */
+.card-menu, .card {
+  background-color: var(--card-cream) !important;
+  border: 1px solid #ebd3b8 !important;
+  border-radius: 16px;
+  transition: transform 0.2s;
+  color: var(--dark-brown);
+}
+.card-menu:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(73, 51, 41, 0.12);
+}
+
+/* Tombol Bertema Terracotta */
+.btn-solid, .btn-primary, .btn-dark {
+  background-color: var(--terracotta) !important;
+  border-color: var(--terracotta) !important;
+  color: #fff !important;
+}
+.btn-solid:hover, .btn-primary:hover, .btn-dark:hover {
+  background-color: var(--caramel) !important;
+  border-color: var(--caramel) !important;
+}
+
+.btn-subtle, .btn-secondary {
+  background-color: #ebd3b8 !important;
+  color: var(--dark-brown) !important;
+  border: none !important;
+}
+
+.btn-outline, .btn-outline-secondary {
+  border-color: var(--terracotta) !important;
+  color: var(--terracotta) !important;
+}
+.btn-outline:hover {
+  background-color: var(--terracotta) !important;
+  color: #fff !important;
+}
+
+/* Tabel & Modal */
+.table {
+  color: var(--dark-brown) !important;
+}
+.table thead, .bg-2 {
+  background-color: #ebd3b8 !important;
+  color: var(--dark-brown) !important;
+}
+.ov {
+  position: fixed;
+  inset: 0;
+  background: rgba(73, 51, 41, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1080;
+  padding: 1rem;
+}
+.mbox {
+  background-color: var(--bg-cream) !important;
+  border-radius: 16px;
+  width: min(680px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.ph {
+  height: 174px;
+}
+.pic {
+  aspect-ratio: 1 / .88;
+}
+.toast-container {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  padding: 1rem;
+  z-index: 1090;
+}
+.ph-img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ph-img .emo {
+  font-size: 5.5rem;
+  line-height: 1;
+}
+.ph-img .emo.big {
+  font-size: 13rem;
+}
