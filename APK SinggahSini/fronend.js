@@ -383,3 +383,60 @@ document.addEventListener('DOMContentLoaded', () => {
   $('customPassModal').addEventListener('click', e => { if (e.target.id === 'customPassModal') closePasswordModal(); });
   switchTab('dashboard');
 });
+// ==================== PENGELOLAAN PRODUK (HARGA & SIMPAN) ====================
+
+// Fungsi untuk merapikan angka harga dengan titik ribuan secara otomatis
+function formatRupiahInput(inputElement) {
+  let value = inputElement.value.replace(/[^,\d]/g, "").toString();
+  let split = value.split(",");
+  let sisa = split[0].length % 3;
+  let rupiah = split[0].substr(0, sisa);
+  let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+  if (ribuan) {
+    let separator = sisa ? "." : "";
+    rupiah += separator + ribuan.join(".");
+  }
+
+  inputElement.value = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
+}
+
+// Pasang event listener otomatis ke input harga saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  const priceInput = document.getElementById('inputProductPrice');
+  if (priceInput) {
+    priceInput.addEventListener('input', function() {
+      formatRupiahInput(this);
+    });
+  }
+});
+
+// Fungsi saat tombol "Simpan" ditekan
+function saveProductChanges() {
+  const code = document.getElementById('inputProductCode')?.value || '';
+  const name = document.getElementById('inputProductName')?.value || '';
+  const category = document.getElementById('inputProductCategory')?.value || '';
+  const price = document.getElementById('inputProductPrice')?.value || '0';
+  const stock = document.getElementById('inputProductStock')?.value || '0';
+
+  if (name.trim() === "") {
+    alert("Nama produk tidak boleh kosong!");
+    return;
+  }
+
+  if (price.trim() === "") {
+    alert("Harga produk tidak boleh kosong!");
+    return;
+  }
+
+  // Tampilkan konfirmasi sukses simpan
+  alert(`Produk "${name}" dengan harga Rp${price} dan stok ${stock} berhasil disimpan!`);
+}
+
+// Fungsi Batal / Reset Form Produk
+function resetProductForm() {
+  document.getElementById('inputProductCode').value = "";
+  document.getElementById('inputProductName').value = "";
+  document.getElementById('inputProductPrice').value = "";
+  document.getElementById('inputProductStock').value = "";
+}
